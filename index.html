@@ -354,6 +354,85 @@
             }
         }
 
+        #oeuvre-guess-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #oeuvre-guess-content {
+            background-color: #fff;
+            color: #2c3e50;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        #oeuvre-guess-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        #oeuvre-guess-input {
+            width: 3rem;
+            height: 3rem;
+            text-align: center;
+            font-size: 1.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            border: 2px solid #bdc3c7;
+            border-radius: 0.5rem;
+            color: #2c3e50;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+        }
+
+        #oeuvre-guess-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        #oeuvre-guess-submit {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-top: 1rem;
+        }
+
+        #oeuvre-guess-submit:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+
+        #oeuvre-guess-submit:active {
+            transform: scale(1);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
     </style>
 </head>
 <body>
@@ -393,6 +472,15 @@
         </table>
     </div>
 
+    <div id="oeuvre-guess-modal">
+        <div id="oeuvre-guess-content">
+            <h2>Guess the Oeuvre</h2>
+            <div id="oeuvre-guess-inputs">
+            </div>
+            <button id="oeuvre-guess-submit">Submit Guess</button>
+        </div>
+    </div>
+
     <script>
         const solution = "SONNET130";
         const clues = [
@@ -419,6 +507,8 @@
         let clueRevealed = [true, false, false, false, false];
         let solvedClues = [];
         let currentSolution = "";
+        let oeuvreGuessAttempts = 3;
+        let oeuvreGuessInputs = [];
 
         const clueTextElement = document.getElementById("clue-text");
         const clueNumberElement = document.getElementById("clue-number");
@@ -429,6 +519,10 @@
         const messageTextElement = document.getElementById("message-text");
         const messageButton = document.getElementById("message-button");
         const letterInputContainer = document.getElementById("letter-input-container");
+        const oeuvreGuessModal = document.getElementById("oeuvre-guess-modal");
+        const oeuvreGuessContent = document.getElementById("oeuvre-guess-content");
+        const oeuvreGuessSubmit = document.getElementById("oeuvre-guess-submit");
+        const oeuvreGuessInputsContainer = document.getElementById("oeuvre-guess-inputs");
 
         const keyboardRows = [
             ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
@@ -451,30 +545,39 @@
             currentSolution = clueSolutions[currentClueIndex];
             createLetterInputs();
             createKeyboard();
+            oeuvreGuessModal.style.display = "none";
         }
 
         function createLetterInputs() {
-            const solutionLength =  currentSolution.length;
-            letterInputContainer.innerHTML = '';
-            for (let i = 0; i < solutionLength; i++) {
-                const input = document.createElement("input");
-                input.type = "text";
-                input.maxLength = "1";
-                input.className = "letter-input";
-                input.dataset.index = i;
-                input.addEventListener("input", handleInput);
-                input.addEventListener("keydown", handleKeyDown);
-                letterInputContainer.appendChild(input);
-            }
-        }
+    const solutionLength = currentSolution.length;
+    letterInputContainer.innerHTML = '';
+    for (let i = 0; i < solutionLength; i++) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.maxLength = "1";
+        input.className = "letter-input";
+        input.dataset.index = i;
+        input.addEventListener("input", handleInput);
+        input.addEventListener("keydown", handleKeyDown);
+        letterInputContainer.appendChild(input);
+    }
+    // Focus the first input when created
+    if (solutionLength > 0) {
+        letterInputContainer.querySelector("input[data-index='0']").focus();
+    }
+}
 
-        function handleInput() {
-            this.value = this.value.toUpperCase();
-            if (this.value.length > 1) {
-                this.value = this.value[0];
-            }
-            updateCurrentGuess();
+function handleInput(event) {
+    this.value = this.value.toUpperCase();
+    if (this.value.length === 1) {
+        const currentIndex = parseInt(this.dataset.index);
+        if (currentIndex < currentSolution.length - 1) {
+            const nextInput = letterInputContainer.querySelector(`input[data-index="${currentIndex + 1}"]`);
+            nextInput.focus();
         }
+    }
+    updateCurrentGuess();
+}
 
         function handleKeyDown(event) {
             if (event.key === 'Backspace') {
@@ -540,9 +643,11 @@
                             createKeyboard();
                             currentGuess = "";
                             clueNumberElement.textContent = `${currentClueIndex + 1}`;
+                            oeuvreGuessAttempts = 3;
+                            showOeuvreGuessModal(); // Show the Oeuvre guess modal
                         }
                         else{
-                            showMessage(`Incorrect Guess! The solution was ${currentSolution}`);
+                            showMessage(`Incorrect Guess! The solution was ${currentSolution}.`);
                         }
                     }
                     else if (currentClueIndex === clues.length - 1) {
@@ -555,10 +660,10 @@
                             });
                             updateSolvedCluesTable();
                             gameOver = true;
-                            showMessage(`Congratulations! You guessed the artwork!`);
+                            showMessage(`Congratulations! You guessed the artwork! Your final score is ${score}`);
                         }
                         else{
-                            showMessage(`Incorrect Guess! The solution was ${currentSolution}`);
+                            showMessage(`Incorrect Guess! The solution was ${currentSolution}.`);
                         }
                     }
                 } else {
@@ -634,6 +739,71 @@
                 tableBody.appendChild(row);
             });
         }
+
+        function showOeuvreGuessModal() {
+    oeuvreGuessModal.style.display = "flex";
+    oeuvreGuessInputsContainer.innerHTML = '';
+    const oeuvreLength = solution.length;
+    oeuvreGuessInputs = [];
+    for (let i = 0; i < oeuvreLength; i++) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.maxLength = "1";
+        input.className = "letter-input";
+        input.id = `oeuvre-guess-input-${i}`;
+        input.addEventListener("input", handleOeuvreInput);
+        input.addEventListener("keydown", handleOeuvreKeyDown);
+        oeuvreGuessInputsContainer.appendChild(input);
+        oeuvreGuessInputs.push(input);
+    }
+
+    oeuvreGuessSubmit.onclick = () => {
+        let oeuvreGuess = "";
+        oeuvreGuessInputs.forEach(input => {
+            oeuvreGuess += input.value;
+        });
+        if (oeuvreGuess.toUpperCase() === solution.toUpperCase()) {
+            // Award more points for earlier guesses
+            const bonusPoints = (5 - currentClueIndex) * 20;
+            score += bonusPoints;
+            scoreElement.textContent = score;
+            gameOver = true;
+            showMessage(`Congratulations! You guessed the artwork! You earned ${bonusPoints} bonus points for solving it early. Your final score is ${score}`);
+        } else {
+            oeuvreGuessAttempts--;
+            if (oeuvreGuessAttempts > 0) {
+                showMessage(`Incorrect guess. You have ${oeuvreGuessAttempts} attempts remaining.`);
+                oeuvreGuessInputs.forEach(input => input.value = "");
+            } else {
+                gameOver = true;
+                showMessage(`Game Over! The artwork was ${solution}.`);
+            }
+        }
+        oeuvreGuessModal.style.display = "none";
+        oeuvreGuessSubmit.onclick = null;
+    };
+}
+
+function handleOeuvreInput(event) {
+    this.value = this.value.toUpperCase();
+    if (this.value.length === 1) {
+        const currentIndex = parseInt(this.id.split('-').pop());
+        if (currentIndex < oeuvreGuessInputs.length - 1) {
+            oeuvreGuessInputs[currentIndex + 1].focus();
+        }
+    }
+}
+
+function handleOeuvreKeyDown(event) {
+    if (event.key === 'Backspace') {
+        if (this.value === '') {
+            const currentIndex = parseInt(this.id.split('-').pop());
+            if (currentIndex > 0) {
+                oeuvreGuessInputs[currentIndex - 1].focus();
+            }
+        }
+    }
+}
 
         // Initialize the game
         initializeGame();
