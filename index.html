@@ -432,6 +432,146 @@
             transform: scale(1);
             box-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
+        
+        /* Add these styles to your existing <style> section */
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.action-button {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.action-button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
+.action-button:active {
+    transform: scale(1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    color: #2c3e50;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    color: #7f8c8d;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    color: #2c3e50;
+}
+
+.modal h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.modal-body {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #34495e;
+}
+
+.modal-body h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: #2c3e50;
+}
+
+.modal-body ol, .modal-body ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.modal-body li {
+    margin-bottom: 0.5rem;
+}
+
+.example-correct, .example-present, .example-absent {
+    display: inline-block;
+    padding: 0.2rem 0.4rem;
+    background-color: #2c3e50;
+    color: white;
+    border-radius: 0.25rem;
+    font-weight: bold;
+}
+
+.archive-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border-bottom: 1px solid #ecf0f1;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.archive-item:hover {
+    background-color: #f5f6fa;
+}
+
+.archive-item:last-child {
+    border-bottom: none;
+}
+
+.archive-item .date {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.archive-item .info {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
 
     </style>
 </head>
@@ -480,7 +620,54 @@
             <button id="oeuvre-guess-submit">Submit Guess</button>
         </div>
     </div>
+    
+<!-- Add this in the header section, after the existing buttons -->
+<div class="button-container">
+    <button id="how-to-play-btn" class="action-button">How to Play</button>
+    <button id="archive-btn" class="action-button">Archive</button>
+</div>
+<!-- Add these modal containers at the end of the body, before the script tag -->
+<div id="how-to-play-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>How to Play Conceits</h2>
+        <div class="modal-body">
+            <p><strong>Conceits</strong> is a cultural puzzle game that offers eccentric clues ("conceits")to find a hidden novel, poem, song, film, or other famous cultural work.</p>
+            
+            <h3>Game Rules:</h3>
+            <ol>
+                <li>You'll be presented with 5 vaguely cryptic clues, one at a time.</li>
+                <li>Solve each clue to reveal a word or phrase linked to the cultural work.</li>
+                <li>After solving each clue, you'll have a chance to guess the linking composition.</li>
+                <li>You have a total of 5 attempts across all clues.</li>
+                <li>Puzzles get harder from Monday-Friday. At the weekend, they get <i>weird</i>.</li>
+                <li>Earn 10 points for each solved clue and bonus points for guessing the famous work early.</li>
+            </ol>
+            
+            <h3>Tips for Solving the "Conceits":</h3>
+            <ul>
+                <li>Clues may be literal or cryptic with a wordplay component.</li>
+                <li>The definition is not always included - naughty, I know.</li>
+                <li>Common types of wordplay include homophones, stage directions, obscure references - anything I feel like.</li>
+                <li>Numbers in parentheses indicate the length of the answer.</li>
+                <li>You should get used to the eccentric clueing style over time!</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
+<div id="archive-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Puzzle Archive</h2>
+        <div class="modal-body">
+            <div id="archive-list">
+                <!-- Archive puzzles will be loaded here -->
+                <p>Loading archive...</p>
+            </div>
+        </div>
+    </div>
+</div>
     <script>
         let solution = "";
         let clues = [];
@@ -1200,6 +1387,239 @@ function showAllClues() {
     
     allCluesSection.appendChild(cluesList);
 }
+
+// Add this script at the end of your JavaScript section, before the final initializeGame() call
+
+// Modal functionality
+const howToPlayBtn = document.getElementById("how-to-play-btn");
+const archiveBtn = document.getElementById("archive-btn");
+const howToPlayModal = document.getElementById("how-to-play-modal");
+const archiveModal = document.getElementById("archive-modal");
+const closeButtons = document.querySelectorAll(".close-modal");
+
+// How to Play button click handler
+howToPlayBtn.addEventListener("click", () => {
+    howToPlayModal.style.display = "flex";
+});
+
+// Archive button click handler
+archiveBtn.addEventListener("click", () => {
+    archiveModal.style.display = "flex";
+    loadArchivePuzzles();
+});
+
+// Close button handlers
+closeButtons.forEach(button => {
+    button.addEventListener("click", (event) => {
+        const modal = event.target.closest(".modal");
+        if (modal) {
+            modal.style.display = "none";
+        }
+    });
+});
+
+// Close modal when clicking outside the content
+window.addEventListener("click", (event) => {
+    if (event.target === howToPlayModal) {
+        howToPlayModal.style.display = "none";
+    }
+    if (event.target === archiveModal) {
+        archiveModal.style.display = "none";
+    }
+});
+
+// Function to load and display archived puzzles
+function loadArchivePuzzles() {
+    const archiveList = document.getElementById("archive-list");
+    
+    // If archive is already loaded, don't reload it
+    if (archiveList.querySelector(".archive-item")) {
+        return;
+    }
+    
+    if (!puzzlesData) {
+        archiveList.innerHTML = "<p>Failed to load archive. Please try again later.</p>";
+        return;
+    }
+    
+    // Clear loading message
+    archiveList.innerHTML = "";
+    
+    // Get dates from puzzles data and sort them in reverse chronological order
+    const dates = Object.keys(puzzlesData).sort((a, b) => new Date(b) - new Date(a));
+    
+    if (dates.length === 0) {
+        archiveList.innerHTML = "<p>No archived puzzles available.</p>";
+        return;
+    }
+    
+    // Create elements for each archived puzzle
+    dates.forEach(date => {
+        const puzzle = puzzlesData[date];
+        const dateObj = new Date(date);
+        const formattedDate = dateObj.toLocaleDateString(undefined, { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        const archiveItem = document.createElement("div");
+        archiveItem.className = "archive-item";
+        
+        const dateElement = document.createElement("div");
+        dateElement.className = "date";
+        dateElement.textContent = formattedDate;
+        
+        const infoElement = document.createElement("div");
+        infoElement.className = "info";
+        infoElement.textContent = `${puzzle.clues.length} clues`;
+        
+        archiveItem.appendChild(dateElement);
+        archiveItem.appendChild(infoElement);
+        
+        // Add click event to load this puzzle
+        archiveItem.addEventListener("click", () => {
+            loadPuzzleByDate(date);
+            archiveModal.style.display = "none";
+        });
+        
+        archiveList.appendChild(archiveItem);
+    });
+}
+
+// Function to load a specific puzzle by date
+function loadPuzzleByDate(dateString) {
+    if (puzzlesData && puzzlesData[dateString]) {
+        // Update current puzzle date
+        currentPuzzleDate = dateString;
+        
+        // Load the puzzle data
+        solution = puzzlesData[dateString].solution;
+        clues = puzzlesData[dateString].clues;
+        clueSolutions = puzzlesData[dateString].clueSolutions;
+        
+        // Reset game state with the new puzzle
+        resetGameState();
+        
+        // Show a confirmation message
+        const dateObj = new Date(dateString);
+        const formattedDate = dateObj.toLocaleDateString(undefined, { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        showMessage(`Loaded puzzle from ${formattedDate}`);
+    } else {
+        showMessage("Failed to load puzzle. Please try again.");
+    }
+}
+
+// Add event listeners when the document is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Add the button container after the header
+    const header = document.querySelector("header");
+    if (header && !document.querySelector(".button-container")) {
+        const buttonContainer = document.createElement("div");
+        buttonContainer.className = "button-container";
+        buttonContainer.innerHTML = `
+            <button id="how-to-play-btn" class="action-button">How to Play</button>
+            <button id="archive-btn" class="action-button">Archive</button>
+        `;
+        header.after(buttonContainer);
+    }
+    
+    // Make sure modal elements exist in the DOM
+    if (!document.getElementById("how-to-play-modal")) {
+        const howToPlayModal = document.createElement("div");
+        howToPlayModal.id = "how-to-play-modal";
+        howToPlayModal.className = "modal";
+        howToPlayModal.innerHTML = `
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>How to Play Outmanoeuvre</h2>
+                <div class="modal-body">
+                    <p><strong>Outmanoeuvre</strong> is a word puzzle game that challenges your cryptic crossword solving skills.</p>
+                    
+                    <h3>Game Rules:</h3>
+                    <ol>
+                        <li>You'll be presented with 5 cryptic clues, one at a time.</li>
+                        <li>Solve each clue to reveal a word or phrase.</li>
+                        <li>After solving each clue, you'll have a chance to guess the complete work (the "oeuvre").</li>
+                        <li>You have a total of 5 attempts across all clues.</li>
+                        <li>For each letter, color feedback will show:
+                            <ul>
+                                <li><span class="example-correct">Dark blue</span>: Correct letter in correct position</li>
+                                <li><span class="example-present">Dark blue</span>: Correct letter but wrong position</li>
+                                <li><span class="example-absent">Dark blue</span>: Letter not in the solution</li>
+                            </ul>
+                        </li>
+                        <li>Earn 10 points for each solved clue and bonus points for guessing the complete work early.</li>
+                    </ol>
+                    
+                    <h3>Tips for Solving Cryptic Clues:</h3>
+                    <ul>
+                        <li>Each clue contains both a definition and wordplay component.</li>
+                        <li>The definition is typically at the beginning or end of the clue.</li>
+                        <li>Common types of wordplay include anagrams, hidden words, and homophones.</li>
+                        <li>Numbers in parentheses indicate the length of the answer.</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(howToPlayModal);
+    }
+
+    if (!document.getElementById("archive-modal")) {
+        const archiveModal = document.createElement("div");
+        archiveModal.id = "archive-modal";
+        archiveModal.className = "modal";
+        archiveModal.innerHTML = `
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Puzzle Archive</h2>
+                <div class="modal-body">
+                    <div id="archive-list">
+                        <!-- Archive puzzles will be loaded here -->
+                        <p>Loading archive...</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(archiveModal);
+    }
+
+    // Initialize the modal functionality
+    const howToPlayBtn = document.getElementById("how-to-play-btn");
+    const archiveBtn = document.getElementById("archive-btn");
+    const howToPlayModal = document.getElementById("how-to-play-modal");
+    const archiveModal = document.getElementById("archive-modal");
+    const closeButtons = document.querySelectorAll(".close-modal");
+
+    if (howToPlayBtn) {
+        howToPlayBtn.addEventListener("click", () => {
+            howToPlayModal.style.display = "flex";
+        });
+    }
+
+    if (archiveBtn) {
+        archiveBtn.addEventListener("click", () => {
+            archiveModal.style.display = "flex";
+            loadArchivePuzzles();
+        });
+    }
+
+    closeButtons.forEach(button => {
+        button.addEventListener("click", (event) => {
+            const modal = event.target.closest(".modal");
+            if (modal) {
+                modal.style.display = "none";
+            }
+        });
+    });
+});
         // Initialize the game
         initializeGame();
     </script>
