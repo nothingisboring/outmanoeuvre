@@ -305,12 +305,12 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
-        .puzzle-button:hover {
+        .:hover {
             background-color: #2980b9;
             transform: scale(1.05);
         }
 
-        .puzzle-button.active {
+        ..active {
             background-color: #217dbb;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             transform: scale(1);
@@ -597,7 +597,7 @@
     </header>
 
     <div class="game-container">
-        <div class="info-container">
+        <div class="">
             <div class="info-box">Clue <span id="clue-number">1</span>/5</div>
             <div class="info-box">Score: <span id="score">0</span></div>
         </div>
@@ -738,41 +738,40 @@ function getTodaysPuzzle() {
 }
         
         const maxGuesses = 6;
-const wordLength = 12;
-let currentClueIndex = 0;
-let currentGuess = "";
-let currentClueGuessCount = 0; // Track guesses per clue for statistics
-let guesses = [];
-let totalRemainingGuesses = Infinity; // Unlimited attempts for clues
-let score = 0;
-let gameOver = false;
-let clueRevealed = [true, false, false, false, false];
-let solvedClues = [];
-let currentSolution = "";
-let oeuvreGuessAttempts = 3;
-let oeuvreGuessInputs = [];
+        const wordLength = 12;
+      let currentClueIndex = 0;
+    let currentGuess = "";
+    let guesses = [];
+    let score = 0;
+    let gameOver = false;
+    let clueRevealed = [true, false, false, false, false];
+    let solvedClues = [];
+    let currentSolution = "";
+    let oeuvreGuessAttempts = 3; // Keep 3 attempts for final guess
+    let oeuvreGuessInputs = [];
+    let skippedClues = new Set(); // Track skipped clues
 
-const clueTextElement = document.getElementById("clue-text");
-const clueNumberElement = document.getElementById("clue-number");
-const scoreElement = document.getElementById("score");
-const guessContainer = document.getElementById("guess-container");
-const keyboardContainer = document.getElementById("keyboard");
-const gameMessageElement = document.getElementById("game-message");
-const messageTextElement = document.getElementById("message-text");
-const messageButton = document.getElementById("message-button");
-const letterInputContainer = document.getElementById("letter-input-container");
-const oeuvreGuessModal = document.getElementById("oeuvre-guess-modal");
-const oeuvreGuessContent = document.getElementById("oeuvre-guess-content");
-const oeuvreGuessSubmit = document.getElementById("oeuvre-guess-submit");
-const oeuvreGuessInputsContainer = document.getElementById("oeuvre-guess-inputs");
+        const clueTextElement = document.getElementById("clue-text");
+        const clueNumberElement = document.getElementById("clue-number");
+        const scoreElement = document.getElementById("score");
+        const guessContainer = document.getElementById("guess-container");
+                const keyboardContainer = document.getElementById("keyboard");
+        const gameMessageElement = document.getElementById("game-message");
+        const messageTextElement = document.getElementById("message-text");
+        const messageButton = document.getElementById("message-button");
+        const letterInputContainer = document.getElementById("letter-input-container");
+        const oeuvreGuessModal = document.getElementById("oeuvre-guess-modal");
+        const oeuvreGuessContent = document.getElementById("oeuvre-guess-content");
+        const oeuvreGuessSubmit = document.getElementById("oeuvre-guess-submit");
+        const oeuvreGuessInputsContainer = document.getElementById("oeuvre-guess-inputs");
+        
+        const keyboardRows = [
+            ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+            ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+            ["Enter", "Z", "X", "C", "V", "B", "N", "M", "←"],
+        ];
 
-const keyboardRows = [
-    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
-    ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-    ["Enter", "Z", "X", "C", "V", "B", "N", "M", "←"],
-];
-
-function initializeGame() {
+     function initializeGame() {
     // Load puzzles first if not already loaded
     if (!puzzlesData) {
         loadPuzzlesFromJSON()
@@ -790,6 +789,58 @@ function initializeGame() {
                         dateDisplay.textContent = `Puzzle: ${new Date(currentPuzzleDate).toLocaleDateString()}`;
                         document.querySelector('.info-container').prepend(dateDisplay);
                     }
+                    // Add skip button creation to the game initialization
+function createGameControls() {
+    const controlsContainer = document.createElement("div");
+    controlsContainer.className = "game-controls";
+    controlsContainer.style.marginTop = "1rem";
+    
+    const skipButton = document.createElement("button");
+    skipButton.textContent = "Skip Clue";
+    skipButton.className = "puzzle-button";
+    skipButton.onclick = skipCurrentClue;
+    
+    controlsContainer.appendChild(skipButton);
+    document.querySelector(".game-container").insertBefore(
+        controlsContainer,
+        document.querySelector("#guess-container")
+    );
+}
+
+                    // Add skip functionality
+function skipCurrentClue() {
+    skippedClues.add(currentClueIndex);
+    currentClueIndex++;
+    
+    if (currentClueIndex < clues.length) {
+        // Move to next clue
+        currentSolution = clueSolutions[currentClueIndex];
+        clueTextElement.textContent = clues[currentClueIndex];
+        clueNumberElement.textContent = `${currentClueIndex + 1}`;
+        
+        // Reset the game state for new clue
+        guesses = [];
+        currentGuess = "";
+        letterInputContainer.innerHTML = '';
+        createLetterInputs();
+        createKeyboard();
+        
+        // Show Oeuvre guess opportunity
+        showOeuvreGuessModal();
+    } else {
+        // All clues have been attempted
+        gameOver = true;
+        showAllClues();
+        showMessage("Game Over! All clues have been attempted.");
+    }
+}
+function updateInfoContainer() {
+    document.querySelector(".info-container").innerHTML = `
+        <div class="info-box">Clue <span id="clue-number">${currentClueIndex + 1}</span>/${clues.length}</div>
+        <div class="info-box">Score: <span id="score">${score}</span></div>
+        <div class="info-box">Oeuvre Attempts: <span id="oeuvre-attempts">${oeuvreGuessAttempts}</span></div>
+    `;
+}
                     
                     // Now initialize the rest of the game
                     resetGameState();
@@ -810,32 +861,56 @@ function initializeGame() {
     }
 }
 
+// Update resetGameState to include new controls
 function resetGameState() {
     currentClueIndex = 0;
     currentGuess = "";
     guesses = [];
     gameOver = false;
     clueRevealed = Array(clues.length).fill(false);
-    clueRevealed[0] = true; // Make first clue visible
+    clueRevealed[0] = true;
     oeuvreGuessAttempts = 3;
-    currentClueGuessCount = 0;
     score = 0;
+    skippedClues.clear();
+    
     scoreElement.textContent = score;
     clueNumberElement.textContent = `${currentClueIndex + 1}`;
     clueTextElement.textContent = clues[currentClueIndex];
     letterInputContainer.innerHTML = '';
     currentSolution = clueSolutions[currentClueIndex];
     solvedClues = [];
+    
     createLetterInputs();
     createKeyboard();
+    createGameControls();
+    updateInfoContainer();
+    
     oeuvreGuessModal.style.display = "none";
+}
     
         document.querySelector(".info-container").innerHTML = `
         <div class="info-box">Clue <span id="clue-number">1</span>/${clues.length}</div>
         <div class="info-box">Score: <span id="score">0</span></div>
         <div class="info-box">Attempts left: <span id="attempts-left">${totalRemainingGuesses}</span></div>
     `;
-}
+
+
+ // If there's a puzzle date, add it
+    if (currentPuzzleDate) {
+        const dateDisplay = document.createElement('div');
+        dateDisplay.className = 'info-box';
+        dateDisplay.textContent = `Puzzle: ${new Date(currentPuzzleDate).toLocaleDateString()}`;
+        document.querySelector('.info-container').prepend(dateDisplay);
+    }
+    
+    // Clear the solved clues table
+    document.querySelector("#solvedCluesTable tbody").innerHTML = "";
+    
+    // Remove any "all clues" section if it exists
+    const allCluesSection = document.getElementById("all-clues-section");
+    if (allCluesSection) {
+        allCluesSection.remove();
+    }
 
 function checkForNewPuzzle() {
     if (puzzlesData) {
@@ -874,7 +949,7 @@ function showMessage(message, buttonText = "OK", buttonAction = null) {
     };
 }
 
-function createLetterInputs() {
+        function createLetterInputs() {
     const solutionLength = currentSolution.length;
     letterInputContainer.innerHTML = '';
     for (let i = 0; i < solutionLength; i++) {
@@ -911,42 +986,43 @@ function handleInput(event) {
     updateCurrentGuess();
 }
 
-function handleKeyDown(event) {
-    if (event.key === 'Backspace') {
-        const currentIndex = parseInt(this.dataset.index);
-        if (this.value === '') {
-            if (currentIndex > 0) {
-                const prevInput = letterInputContainer.querySelector(`input[data-index="${currentIndex - 1}"]`);
-                prevInput.focus();
+        function handleKeyDown(event) {
+            if (event.key === 'Backspace') {
+                const currentIndex = parseInt(this.dataset.index);
+                if (this.value === '') {
+                    if (currentIndex > 0) {
+                        const prevInput = letterInputContainer.querySelector(`input[data-index="${currentIndex - 1}"]`);
+                        prevInput.focus();
+                    }
+                }
             }
         }
-    }
-}
 
-function updateCurrentGuess() {
-    currentGuess = "";
-    const inputs = letterInputContainer.querySelectorAll(".letter-input");
-    inputs.forEach((input) => {
-        currentGuess += input.value;
-    });
-}
+        function updateCurrentGuess() {
+            currentGuess = "";
+            const inputs = letterInputContainer.querySelectorAll(".letter-input");
+            inputs.forEach((input) => {
+                currentGuess += input.value;
+            });
+        }
 
-function createKeyboard() {
-    keyboardContainer.innerHTML = '';
-    keyboardRows.forEach((rowKeys) => {
-        const row = document.createElement("div");
-        row.className = "keyboard-row";
-        rowKeys.forEach((key) => {
-            const keyElement = document.createElement("div");
-            keyElement.className = `key ${key === "Enter" || key === "←" ? "key-wide" : ""}`;
-            keyElement.textContent = key;
-            keyElement.addEventListener("click", () => handleKeyClick(key));
-            row.appendChild(keyElement);
-        });
-        keyboardContainer.appendChild(row);
-    });
-}
+        function createKeyboard() {
+            keyboardContainer.innerHTML = '';
+            keyboardRows.forEach((rowKeys) => {
+                const row = document.createElement("div");
+                row.className = "keyboard-row";
+                rowKeys.forEach((key) => {
+                    const keyElement = document.createElement("div");
+                    keyElement.className = `key ${key === "Enter" || key === "←" ? "key-wide" : ""}`;
+                    keyElement.textContent = key;
+                    keyElement.addEventListener("click", () => handleKeyClick(key));
+                    row.appendChild(keyElement);
+                });
+                keyboardContainer.appendChild(row);
+            });
+        }
 
+  // Update handleKeyClick to remove attempt limits for clues
 function handleKeyClick(key) {
     if (gameOver) return;
 
@@ -956,7 +1032,7 @@ function handleKeyClick(key) {
             guesses.push(currentGuess);
             
             if (currentGuess.toUpperCase() === currentSolution.toUpperCase()) {
-                // Correct guess - proceed as before
+                // Correct guess
                 score += 10;
                 scoreElement.textContent = score;
                 solvedClues.push({
@@ -968,7 +1044,7 @@ function handleKeyClick(key) {
                 // Move to next clue
                 currentClueIndex++;
                 
-                // Show the Oeuvre guess modal BEFORE updating to next clue
+                // Show the Oeuvre guess modal
                 showOeuvreGuessModal();
                 
                 if (currentClueIndex < clues.length) {
@@ -979,32 +1055,27 @@ function handleKeyClick(key) {
                     createKeyboard();
                     currentGuess = "";
                     clueNumberElement.textContent = `${currentClueIndex + 1}`;
+                    updateInfoContainer();
                 } else {
-                    // Final clue was solved - show artwork guess UI
                     gameOver = true;
                     showAllClues();
                     showMessage(`Congratulations! You solved all clues! Your final score is ${score}`);
                 }
             } else {
-                // Incorrect guess
-                currentClueGuessCount++;
-                
-                // Show feedback on the letters
+                // Incorrect guess - just show feedback, no attempt limits
                 updateGuessedLetters(guesses.length - 1);
                 
-                // Clear the input fields but KEEP the correct ones
+                // Clear incorrect letters but keep correct ones
                 const inputs = letterInputContainer.querySelectorAll(".letter-input");
-                inputs.forEach((input, index) => {
-                    // Only clear inputs that aren't marked as "correct"
+                inputs.forEach(input => {
                     if (!input.classList.contains("correct")) {
                         input.value = "";
                     }
                 });
                 
-                // Update current guess to include only the correct letters
                 updateCurrentGuess();
                 
-                // Focus the first empty input
+                // Focus first empty input
                 for (let i = 0; i < inputs.length; i++) {
                     if (inputs[i].value === "") {
                         inputs[i].focus();
@@ -1012,7 +1083,9 @@ function handleKeyClick(key) {
                     }
                 }
             }
-        } else {
+        }
+    }
+    } else {
             const inputs = letterInputContainer.querySelectorAll(".letter-input");
             inputs.forEach(input => {
                 input.classList.add('shake');
@@ -1048,19 +1121,18 @@ function handleKeyClick(key) {
     }
 }
 
-function updateGuessedLetters(guessIndex) {
-    const guess = guesses[guessIndex];
-    const solution = currentSolution.toUpperCase();
-    const inputs = letterInputContainer.querySelectorAll(".letter-input");
-
+        function updateGuessedLetters(guessIndex) {
+        const guess = guesses[guessIndex];
+        const solution = currentSolution.toUpperCase();
+        const inputs = letterInputContainer.querySelectorAll(".letter-input");
+    
     // Count letter frequencies in the solution
-    const letterCounts = {};
-    for (let i = 0; i < solution.length; i++) {
+        const letterCounts = {};
+        for (let i = 0; i < solution.length; i++) {
         const letter = solution[i];
         letterCounts[letter] = (letterCounts[letter] || 0) + 1;
     }
-
-    // First, mark correct positions
+ // First, mark correct positions
     for (let i = 0; i < guess.length; i++) {
         const guessLetter = guess[i].toUpperCase();
         
@@ -1084,8 +1156,7 @@ function updateGuessedLetters(guessIndex) {
             inputs[i].className = "letter-input absent";
         }
     }
-    
-    // Also update keyboard color feedback
+     // Also update keyboard color feedback
     updateKeyboardColors(guess, solution);
 }
 
@@ -1129,23 +1200,34 @@ function updateKeyboardColors(guess, solution) {
         }
     }
 }
+        function showMessage(message) {
+            messageTextElement.textContent = message;
+            gameMessageElement.classList.add("show");
 
-function updateSolvedCluesTable() {
-    const tableBody = document.querySelector("#solvedCluesTable tbody");
-    tableBody.innerHTML = "";
-    solvedClues.forEach(solvedClue => {
-        const row = document.createElement("tr");
-        const clueCell = document.createElement("td");
-        const answerCell = document.createElement("td");
-        clueCell.textContent = solvedClue.clue;
-        answerCell.textContent = solvedClue.answer;
-        row.appendChild(clueCell);
-        row.appendChild(answerCell);
-        tableBody.appendChild(row);
-    });
-}
+            messageButton.onclick = () => {
+                gameMessageElement.classList.remove("show");
+                if (gameOver) {
+                    initializeGame();
+                }
+            };
+        }
 
-function showOeuvreGuessModal() {
+        function updateSolvedCluesTable() {
+            const tableBody = document.querySelector("#solvedCluesTable tbody");
+            tableBody.innerHTML = "";
+            solvedClues.forEach(solvedClue => {
+                const row = document.createElement("tr");
+                const clueCell = document.createElement("td");
+                const answerCell = document.createElement("td");
+                clueCell.textContent = solvedClue.clue;
+                answerCell.textContent = solvedClue.answer;
+                row.appendChild(clueCell);
+                row.appendChild(answerCell);
+                tableBody.appendChild(row);
+            });
+        }
+
+       function showOeuvreGuessModal() {
     oeuvreGuessModal.style.display = "flex";
     oeuvreGuessInputsContainer.innerHTML = '';
     
@@ -1180,7 +1262,7 @@ function showOeuvreGuessModal() {
         skipButton = document.createElement("button");
         skipButton.id = "oeuvre-skip-button";
         skipButton.textContent = "Skip";
-        skipButton.className = "puzzle-button";
+        skipButton.className = "";
         skipButton.style.backgroundColor = "#95a5a6";
         skipButton.style.marginLeft = "1rem";
         
@@ -1239,14 +1321,6 @@ function showOeuvreGuessModal() {
         oeuvreGuessModal.style.display = "none";
     };
 }
-
-// Make sure we have the event handler for the Oeuvre input fields
-function handleOeuvreInput(event) {
-    this.value = this.value.toUpperCase();
-    if (this.value.length === 1) {
-        const currentIndex = parseInt(this.id.split('-').pop());
-        if (currentIndex < oeuvreGuessInputs.length - 1) {
-            oeuvre
 
 // Make sure we have the event handler for the Oeuvre input fields
 function handleOeuvreInput(event) {
