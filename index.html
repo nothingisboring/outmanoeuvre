@@ -305,12 +305,12 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
-        .puzzle-button:hover {
+        .:hover {
             background-color: #2980b9;
             transform: scale(1.05);
         }
 
-        .puzzle-button.active {
+        ..active {
             background-color: #217dbb;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             transform: scale(1);
@@ -597,7 +597,7 @@
     </header>
 
     <div class="game-container">
-        <div class="info-container">
+        <div class="">
             <div class="info-box">Clue <span id="clue-number">1</span>/5</div>
             <div class="info-box">Score: <span id="score">0</span></div>
         </div>
@@ -739,20 +739,17 @@ function getTodaysPuzzle() {
         
         const maxGuesses = 6;
         const wordLength = 12;
-        let currentClueIndex = 0;
-        let currentGuess = "";
-        // Add to the initial variable declarations at the top
-        let currentClueGuessCount = 0; // Still track guesses per clue for statistics
-        const maxClueGuesses = 5; // Total attempts across all clues
-        let guesses = [];
-        let totalRemainingGuesses = maxClueGuesses; // Track remaining guesses
-        let score = 0;
-        let gameOver = false;
-        let clueRevealed = [true, false, false, false, false];
-        let solvedClues = [];
-        let currentSolution = "";
-        let oeuvreGuessAttempts = 3;
-        let oeuvreGuessInputs = [];
+      let currentClueIndex = 0;
+    let currentGuess = "";
+    let guesses = [];
+    let score = 0;
+    let gameOver = false;
+    let clueRevealed = [true, false, false, false, false];
+    let solvedClues = [];
+    let currentSolution = "";
+    let oeuvreGuessAttempts = 3; // Keep 3 attempts for final guess
+    let oeuvreGuessInputs = [];
+    let skippedClues = new Set(); // Track skipped clues
 
         const clueTextElement = document.getElementById("clue-text");
         const clueNumberElement = document.getElementById("clue-number");
@@ -792,6 +789,58 @@ function getTodaysPuzzle() {
                         dateDisplay.textContent = `Puzzle: ${new Date(currentPuzzleDate).toLocaleDateString()}`;
                         document.querySelector('.info-container').prepend(dateDisplay);
                     }
+                    // Add skip button creation to the game initialization
+function createGameControls() {
+    const controlsContainer = document.createElement("div");
+    controlsContainer.className = "game-controls";
+    controlsContainer.style.marginTop = "1rem";
+    
+    const skipButton = document.createElement("button");
+    skipButton.textContent = "Skip Clue";
+    skipButton.className = "puzzle-button";
+    skipButton.onclick = skipCurrentClue;
+    
+    controlsContainer.appendChild(skipButton);
+    document.querySelector(".game-container").insertBefore(
+        controlsContainer,
+        document.querySelector("#guess-container")
+    );
+}
+
+                    // Add skip functionality
+function skipCurrentClue() {
+    skippedClues.add(currentClueIndex);
+    currentClueIndex++;
+    
+    if (currentClueIndex < clues.length) {
+        // Move to next clue
+        currentSolution = clueSolutions[currentClueIndex];
+        clueTextElement.textContent = clues[currentClueIndex];
+        clueNumberElement.textContent = `${currentClueIndex + 1}`;
+        
+        // Reset the game state for new clue
+        guesses = [];
+        currentGuess = "";
+        letterInputContainer.innerHTML = '';
+        createLetterInputs();
+        createKeyboard();
+        
+        // Show Oeuvre guess opportunity
+        showOeuvreGuessModal();
+    } else {
+        // All clues have been attempted
+        gameOver = true;
+        showAllClues();
+        showMessage("Game Over! All clues have been attempted.");
+    }
+}
+function updateInfoContainer() {
+    document.querySelector(".info-container").innerHTML = `
+        <div class="info-box">Clue <span id="clue-number">${currentClueIndex + 1}</span>/${clues.length}</div>
+        <div class="info-box">Score: <span id="score">${score}</span></div>
+        <div class="info-box">Oeuvre Attempts: <span id="oeuvre-attempts">${oeuvreGuessAttempts}</span></div>
+    `;
+}
                     
                     // Now initialize the rest of the game
                     resetGameState();
@@ -812,26 +861,32 @@ function getTodaysPuzzle() {
     }
 }
 
+// Update resetGameState to include new controls
 function resetGameState() {
     currentClueIndex = 0;
     currentGuess = "";
     guesses = [];
     gameOver = false;
     clueRevealed = Array(clues.length).fill(false);
-    clueRevealed[0] = true; // Make first clue visible
+    clueRevealed[0] = true;
     oeuvreGuessAttempts = 3;
-    currentClueGuessCount = 0;
-    totalRemainingGuesses = maxClueGuesses;
     score = 0;
+    skippedClues.clear();
+    
     scoreElement.textContent = score;
     clueNumberElement.textContent = `${currentClueIndex + 1}`;
     clueTextElement.textContent = clues[currentClueIndex];
     letterInputContainer.innerHTML = '';
     currentSolution = clueSolutions[currentClueIndex];
     solvedClues = [];
+    
     createLetterInputs();
     createKeyboard();
+    createGameControls();
+    updateInfoContainer();
+    
     oeuvreGuessModal.style.display = "none";
+}
     
         document.querySelector(".info-container").innerHTML = `
         <div class="info-box">Clue <span id="clue-number">1</span>/${clues.length}</div>
@@ -967,7 +1022,8 @@ function handleInput(event) {
             });
         }
 
-    function handleKeyClick(key) {
+  // Update handleKeyClick to remove attempt limits for clues
+function handleKeyClick(key) {
     if (gameOver) return;
 
     if (key === "Enter") {
@@ -976,7 +1032,7 @@ function handleInput(event) {
             guesses.push(currentGuess);
             
             if (currentGuess.toUpperCase() === currentSolution.toUpperCase()) {
-                // Correct guess - proceed as before
+                // Correct guess
                 score += 10;
                 scoreElement.textContent = score;
                 solvedClues.push({
@@ -988,7 +1044,7 @@ function handleInput(event) {
                 // Move to next clue
                 currentClueIndex++;
                 
-                // Show the Oeuvre guess modal BEFORE updating to next clue
+                // Show the Oeuvre guess modal
                 showOeuvreGuessModal();
                 
                 if (currentClueIndex < clues.length) {
@@ -999,44 +1055,28 @@ function handleInput(event) {
                     createKeyboard();
                     currentGuess = "";
                     clueNumberElement.textContent = `${currentClueIndex + 1}`;
+                    updateInfoContainer();
                 } else {
-                    // Final clue was solved - show artwork guess UI
                     gameOver = true;
                     showAllClues();
                     showMessage(`Congratulations! You solved all clues! Your final score is ${score}`);
                 }
             } else {
-            // Incorrect guess
-            currentClueGuessCount++;
-            totalRemainingGuesses--; // Decrement total guesses
-            document.getElementById("attempts-left").textContent = totalRemainingGuesses;
-            
-            // Show feedback on the letters
-            updateGuessedLetters(guesses.length - 1);
+                // Incorrect guess - just show feedback, no attempt limits
+                updateGuessedLetters(guesses.length - 1);
                 
-                if (totalRemainingGuesses <= 0) {
-                // Used all guesses
-                gameOver = true;
-                showMessage(`Game Over! No more attempts left. The artwork was ${solution}.`);
-                showAllClues();
-            } else {
-                // Still have guesses left
-                showMessage(`Incorrect guess. You have ${totalRemainingGuesses} total attempts remaining.`);
-                
-                // Clear the input fields but KEEP the correct ones
+                // Clear incorrect letters but keep correct ones
                 const inputs = letterInputContainer.querySelectorAll(".letter-input");
-                inputs.forEach((input, index) => {
-                    // Only clear inputs that aren't marked as "correct"
+                inputs.forEach(input => {
                     if (!input.classList.contains("correct")) {
                         input.value = "";
                     }
                 });
-                    
-                    // Update current guess to include only the correct letters
-                    updateCurrentGuess();
-                    
-                    // Focus the first empty input
-                    for (let i = 0; i < inputs.length; i++) {
+                
+                updateCurrentGuess();
+                
+                // Focus first empty input
+                for (let i = 0; i < inputs.length; i++) {
                     if (inputs[i].value === "") {
                         inputs[i].focus();
                         break;
@@ -1044,6 +1084,7 @@ function handleInput(event) {
                 }
             }
         }
+    }
     } else {
             const inputs = letterInputContainer.querySelectorAll(".letter-input");
             inputs.forEach(input => {
@@ -1221,7 +1262,7 @@ function updateKeyboardColors(guess, solution) {
         skipButton = document.createElement("button");
         skipButton.id = "oeuvre-skip-button";
         skipButton.textContent = "Skip";
-        skipButton.className = "puzzle-button";
+        skipButton.className = "";
         skipButton.style.backgroundColor = "#95a5a6";
         skipButton.style.marginLeft = "1rem";
         
