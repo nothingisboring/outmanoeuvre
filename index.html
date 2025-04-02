@@ -1124,42 +1124,44 @@ function handleKeyClick(key) {
     }
 }
 
-        function updateGuessedLetters(guessIndex) {
-        const guess = guesses[guessIndex];
-        const solution = currentSolution.toUpperCase();
-        const inputs = letterInputContainer.querySelectorAll(".letter-input");
+     function updateGuessedLetters(guessIndex) {
+    const guess = guesses[guessIndex];
+    const solution = currentSolution.toUpperCase();
+    const inputs = letterInputContainer.querySelectorAll(".letter-input");
     
     // Count letter frequencies in the solution
-        const letterCounts = {};
-        for (let i = 0; i < solution.length; i++) {
+    const letterCounts = {};
+    for (let i = 0; i < solution.length; i++) {
         const letter = solution[i];
         letterCounts[letter] = (letterCounts[letter] || 0) + 1;
     }
- // First, mark correct positions
+
+    // First pass - mark correct positions
     for (let i = 0; i < guess.length; i++) {
         const guessLetter = guess[i].toUpperCase();
-        
         if (guessLetter === solution[i]) {
             inputs[i].className = "letter-input correct";
             letterCounts[guessLetter]--;
         }
     }
     
-    // Then, mark present but incorrect position
+    // Second pass - mark present but incorrect positions
     for (let i = 0; i < guess.length; i++) {
         const guessLetter = guess[i].toUpperCase();
         
         if (guessLetter === solution[i]) {
-            // Already marked as correct
-            continue;
-        } else if (solution.includes(guessLetter) && letterCounts[guessLetter] > 0) {
+            continue; // Skip letters that are already marked correct
+        }
+        
+        if (solution.includes(guessLetter) && letterCounts[guessLetter] > 0) {
             inputs[i].className = "letter-input present";
             letterCounts[guessLetter]--;
         } else {
             inputs[i].className = "letter-input absent";
         }
     }
-     // Also update keyboard color feedback
+
+    // Update keyboard colors
     updateKeyboardColors(guess, solution);
 }
 
