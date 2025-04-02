@@ -393,28 +393,31 @@
         }
 
         #oeuvre-guess-inputs {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap; /* Add this to allow wrapping */
+    max-width: 100%; /* Ensure it doesn't exceed container width */
+    padding: 0 1rem; /* Add some padding for better spacing */
+}
 
-        #oeuvre-guess-input {
-            width: 3rem;
-            height: 3rem;
-            text-align: center;
-            font-size: 1.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            border: 2px solid #bdc3c7;
-            border-radius: 0.5rem;
-            color: #2c3e50;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-appearance: none;
-            -moz-appearance: textfield;
-        }
-
+#oeuvre-guess-input {
+    width: 2.5rem; /* Slightly reduce size for better fit on mobile */
+    height: 2.5rem;
+    text-align: center;
+    font-size: 1.5rem; /* Slightly smaller font size */
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 2px solid #bdc3c7;
+    border-radius: 0.5rem;
+    color: #2c3e50;
+    padding: 0;
+    margin: 0.25rem; /* Add some margin between inputs */
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+}
         #oeuvre-guess-input:focus {
             outline: none;
             border-color: #3498db;
