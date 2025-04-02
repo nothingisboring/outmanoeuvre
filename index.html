@@ -842,19 +842,14 @@ function skipCurrentClue() {
 }
 // Update the info container to show only relevant information
 function updateInfoContainer() {
-    document.querySelector(".info-container").innerHTML = `
-        <div class="info-box">Clue <span id="clue-number">${currentClueIndex + 1}</span>/${clues.length}</div>
-        <div class="info-box">Score: <span id="score">${score}</span></div>
-        <div class="info-box">Oeuvre Attempts: <span id="oeuvre-attempts">${oeuvreGuessAttempts}</span></div>
-    `;
-                    
-                    // Now initialize the rest of the game
-                    resetGameState();
-              
-                    showMessage('No puzzle available for today. Please check back later.');
-                }
-            };
-    } else {
+        document.querySelector(".info-container").innerHTML = `
+            <div class="info-box">Clue <span id="clue-number">${currentClueIndex + 1}</span>/${clues.length}</div>
+            <div class="info-box">Score: <span id="score">${score}</span></div>
+            <div class="info-box">Oeuvre Attempts: <span id="oeuvre-attempts">${oeuvreGuessAttempts}</span></div>
+        `;
+    }
+
+    function initializeGame() {
         const todaysPuzzle = getTodaysPuzzle();
         if (todaysPuzzle) {
             solution = todaysPuzzle.solution;
@@ -865,7 +860,9 @@ function updateInfoContainer() {
             showMessage('No puzzle available for today. Please check back later.');
         }
     }
-}
+    
+    // Call initializeGame to start the process
+    initializeGame();
 
 // Update the resetGameState function to use oeuvreGuessAttempts instead
 function resetGameState() {
