@@ -58,94 +58,107 @@
         }
 
         .clue-container {
-            width: 100%;
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-            background-color: #fff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
+    width: 100%;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
 
-        .clue-label {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #34495e;
-            font-size: 1rem;
-        }
+.clue-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #34495e;
+    font-size: 1rem;
+}
 
-        .clue-text {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2c3e50;
-            text-align: center;
-            padding: 0.5rem;
-            letter-spacing: -0.02em;
-            min-height: 2.5em;
-        }
+.clue-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: center;
+    padding: 0.5rem;
+    letter-spacing: -0.02em;
+    min-height: 2.5em;
+}
 
-        .guess-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
+.guess-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
 
-        .guess-row {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-        }
+.guess-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap; /* Add this to enable wrapping */
+    padding: 0.25rem 0; /* Add some padding to separate wrapped rows */
+}
 
-        .letter-input-container {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
+.letter-input-container {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap; /* Add this to enable wrapping */
+    max-width: 100%; /* Ensure container respects parent width */
+}
 
-        .letter-input {
-            width: 3rem;
-            height: 3rem;
-            text-align: center;
-            font-size: 1.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            border: 2px solid #bdc3c7;
-            border-radius: 0.5rem;
-            background-color: #fff;
-            color: #2c3e50;
-            transition: all 0.2s ease;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-appearance: none;
-            -moz-appearance: textfield;
-        }
+.letter-input {
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 2px solid #bdc3c7;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    color: #2c3e50;
+    transition: all 0.2s ease;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    margin: 0.25rem 0; /* Add vertical margins for spacing when wrapped */
+}
 
-        .letter-input:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
-        }
+.letter-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
 
-        .letter-input.correct {
-            background-color: #2c3e50;
-            border-color: #2c3e50;
-            color: white;
-        }
+.letter-input.correct {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    color: white;
+}
 
-        .letter-input.present {
-            background-color: #2c3e50;
-            border-color: #2c3e50;
-            color: white;
-        }
+.letter-input.present {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    color: white;
+}
 
-        .letter-input.absent {
-            background-color: #2c3e50;
-            border-color: #2c3e50;
-            color: white;
-        }
+.letter-input.absent {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    color: white;
+}
 
+/* Media query for smaller screens */
+@media (max-width: 600px) {
+    .letter-input {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.5rem;
+    }
+}
         .keyboard {
             width: 100%;
             display: flex;
@@ -380,28 +393,31 @@
         }
 
         #oeuvre-guess-inputs {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap; /* Add this to allow wrapping */
+    max-width: 100%; /* Ensure it doesn't exceed container width */
+    padding: 0 1rem; /* Add some padding for better spacing */
+}
 
-        #oeuvre-guess-input {
-            width: 3rem;
-            height: 3rem;
-            text-align: center;
-            font-size: 1.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            border: 2px solid #bdc3c7;
-            border-radius: 0.5rem;
-            color: #2c3e50;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-appearance: none;
-            -moz-appearance: textfield;
-        }
-
+#oeuvre-guess-input {
+    width: 2.5rem; /* Slightly reduce size for better fit on mobile */
+    height: 2.5rem;
+    text-align: center;
+    font-size: 1.5rem; /* Slightly smaller font size */
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 2px solid #bdc3c7;
+    border-radius: 0.5rem;
+    color: #2c3e50;
+    padding: 0;
+    margin: 0.25rem; /* Add some margin between inputs */
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+}
         #oeuvre-guess-input:focus {
             outline: none;
             border-color: #3498db;
@@ -439,7 +455,7 @@
     display: flex;
     justify-content: center;
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 3rem;
     width: 100%;
 }
 
@@ -722,43 +738,41 @@ function getTodaysPuzzle() {
 }
         
         const maxGuesses = 6;
-        const wordLength = 12;
-        let currentClueIndex = 0;
-        let currentGuess = "";
-        // Add to the initial variable declarations at the top
-        let currentClueGuessCount = 0; // Still track guesses per clue for statistics
-        const maxClueGuesses = 5; // Total attempts across all clues
-        let guesses = [];
-        let totalRemainingGuesses = maxClueGuesses; // Track remaining guesses
-        let score = 0;
-        let gameOver = false;
-        let clueRevealed = [true, false, false, false, false];
-        let solvedClues = [];
-        let currentSolution = "";
-        let oeuvreGuessAttempts = 3;
-        let oeuvreGuessInputs = [];
+const wordLength = 12;
+let currentClueIndex = 0;
+let currentGuess = "";
+let currentClueGuessCount = 0; // Track guesses per clue for statistics
+let guesses = [];
+let totalRemainingGuesses = Infinity; // Unlimited attempts for clues
+let score = 0;
+let gameOver = false;
+let clueRevealed = [true, false, false, false, false];
+let solvedClues = [];
+let currentSolution = "";
+let oeuvreGuessAttempts = 3;
+let oeuvreGuessInputs = [];
 
-        const clueTextElement = document.getElementById("clue-text");
-        const clueNumberElement = document.getElementById("clue-number");
-        const scoreElement = document.getElementById("score");
-        const guessContainer = document.getElementById("guess-container");
-                const keyboardContainer = document.getElementById("keyboard");
-        const gameMessageElement = document.getElementById("game-message");
-        const messageTextElement = document.getElementById("message-text");
-        const messageButton = document.getElementById("message-button");
-        const letterInputContainer = document.getElementById("letter-input-container");
-        const oeuvreGuessModal = document.getElementById("oeuvre-guess-modal");
-        const oeuvreGuessContent = document.getElementById("oeuvre-guess-content");
-        const oeuvreGuessSubmit = document.getElementById("oeuvre-guess-submit");
-        const oeuvreGuessInputsContainer = document.getElementById("oeuvre-guess-inputs");
-        
-        const keyboardRows = [
-            ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
-            ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-            ["Enter", "Z", "X", "C", "V", "B", "N", "M", "←"],
-        ];
+const clueTextElement = document.getElementById("clue-text");
+const clueNumberElement = document.getElementById("clue-number");
+const scoreElement = document.getElementById("score");
+const guessContainer = document.getElementById("guess-container");
+const keyboardContainer = document.getElementById("keyboard");
+const gameMessageElement = document.getElementById("game-message");
+const messageTextElement = document.getElementById("message-text");
+const messageButton = document.getElementById("message-button");
+const letterInputContainer = document.getElementById("letter-input-container");
+const oeuvreGuessModal = document.getElementById("oeuvre-guess-modal");
+const oeuvreGuessContent = document.getElementById("oeuvre-guess-content");
+const oeuvreGuessSubmit = document.getElementById("oeuvre-guess-submit");
+const oeuvreGuessInputsContainer = document.getElementById("oeuvre-guess-inputs");
 
-     function initializeGame() {
+const keyboardRows = [
+    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+    ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+    ["Enter", "Z", "X", "C", "V", "B", "N", "M", "←"],
+];
+
+function initializeGame() {
     // Load puzzles first if not already loaded
     if (!puzzlesData) {
         loadPuzzlesFromJSON()
@@ -805,7 +819,6 @@ function resetGameState() {
     clueRevealed[0] = true; // Make first clue visible
     oeuvreGuessAttempts = 3;
     currentClueGuessCount = 0;
-    totalRemainingGuesses = maxClueGuesses;
     score = 0;
     scoreElement.textContent = score;
     clueNumberElement.textContent = `${currentClueIndex + 1}`;
@@ -823,23 +836,6 @@ function resetGameState() {
         <div class="info-box">Attempts left: <span id="attempts-left">${totalRemainingGuesses}</span></div>
     `;
 }
-
- // If there's a puzzle date, add it
-    if (currentPuzzleDate) {
-        const dateDisplay = document.createElement('div');
-        dateDisplay.className = 'info-box';
-        dateDisplay.textContent = `Puzzle: ${new Date(currentPuzzleDate).toLocaleDateString()}`;
-        document.querySelector('.info-container').prepend(dateDisplay);
-    }
-    
-    // Clear the solved clues table
-    document.querySelector("#solvedCluesTable tbody").innerHTML = "";
-    
-    // Remove any "all clues" section if it exists
-    const allCluesSection = document.getElementById("all-clues-section");
-    if (allCluesSection) {
-        allCluesSection.remove();
-    }
 
 function checkForNewPuzzle() {
     if (puzzlesData) {
@@ -878,7 +874,7 @@ function showMessage(message, buttonText = "OK", buttonAction = null) {
     };
 }
 
-        function createLetterInputs() {
+function createLetterInputs() {
     const solutionLength = currentSolution.length;
     letterInputContainer.innerHTML = '';
     for (let i = 0; i < solutionLength; i++) {
@@ -915,43 +911,43 @@ function handleInput(event) {
     updateCurrentGuess();
 }
 
-        function handleKeyDown(event) {
-            if (event.key === 'Backspace') {
-                const currentIndex = parseInt(this.dataset.index);
-                if (this.value === '') {
-                    if (currentIndex > 0) {
-                        const prevInput = letterInputContainer.querySelector(`input[data-index="${currentIndex - 1}"]`);
-                        prevInput.focus();
-                    }
-                }
+function handleKeyDown(event) {
+    if (event.key === 'Backspace') {
+        const currentIndex = parseInt(this.dataset.index);
+        if (this.value === '') {
+            if (currentIndex > 0) {
+                const prevInput = letterInputContainer.querySelector(`input[data-index="${currentIndex - 1}"]`);
+                prevInput.focus();
             }
         }
+    }
+}
 
-        function updateCurrentGuess() {
-            currentGuess = "";
-            const inputs = letterInputContainer.querySelectorAll(".letter-input");
-            inputs.forEach((input) => {
-                currentGuess += input.value;
-            });
-        }
+function updateCurrentGuess() {
+    currentGuess = "";
+    const inputs = letterInputContainer.querySelectorAll(".letter-input");
+    inputs.forEach((input) => {
+        currentGuess += input.value;
+    });
+}
 
-        function createKeyboard() {
-            keyboardContainer.innerHTML = '';
-            keyboardRows.forEach((rowKeys) => {
-                const row = document.createElement("div");
-                row.className = "keyboard-row";
-                rowKeys.forEach((key) => {
-                    const keyElement = document.createElement("div");
-                    keyElement.className = `key ${key === "Enter" || key === "←" ? "key-wide" : ""}`;
-                    keyElement.textContent = key;
-                    keyElement.addEventListener("click", () => handleKeyClick(key));
-                    row.appendChild(keyElement);
-                });
-                keyboardContainer.appendChild(row);
-            });
-        }
+function createKeyboard() {
+    keyboardContainer.innerHTML = '';
+    keyboardRows.forEach((rowKeys) => {
+        const row = document.createElement("div");
+        row.className = "keyboard-row";
+        rowKeys.forEach((key) => {
+            const keyElement = document.createElement("div");
+            keyElement.className = `key ${key === "Enter" || key === "←" ? "key-wide" : ""}`;
+            keyElement.textContent = key;
+            keyElement.addEventListener("click", () => handleKeyClick(key));
+            row.appendChild(keyElement);
+        });
+        keyboardContainer.appendChild(row);
+    });
+}
 
-    function handleKeyClick(key) {
+function handleKeyClick(key) {
     if (gameOver) return;
 
     if (key === "Enter") {
@@ -990,22 +986,11 @@ function handleInput(event) {
                     showMessage(`Congratulations! You solved all clues! Your final score is ${score}`);
                 }
             } else {
-            // Incorrect guess
-            currentClueGuessCount++;
-            totalRemainingGuesses--; // Decrement total guesses
-            document.getElementById("attempts-left").textContent = totalRemainingGuesses;
-            
-            // Show feedback on the letters
-            updateGuessedLetters(guesses.length - 1);
+                // Incorrect guess
+                currentClueGuessCount++;
                 
-                if (totalRemainingGuesses <= 0) {
-                // Used all guesses
-                gameOver = true;
-                showMessage(`Game Over! No more attempts left. The artwork was ${solution}.`);
-                showAllClues();
-            } else {
-                // Still have guesses left
-                showMessage(`Incorrect guess. You have ${totalRemainingGuesses} total attempts remaining.`);
+                // Show feedback on the letters
+                updateGuessedLetters(guesses.length - 1);
                 
                 // Clear the input fields but KEEP the correct ones
                 const inputs = letterInputContainer.querySelectorAll(".letter-input");
@@ -1015,20 +1000,19 @@ function handleInput(event) {
                         input.value = "";
                     }
                 });
-                    
-                    // Update current guess to include only the correct letters
-                    updateCurrentGuess();
-                    
-                    // Focus the first empty input
-                    for (let i = 0; i < inputs.length; i++) {
+                
+                // Update current guess to include only the correct letters
+                updateCurrentGuess();
+                
+                // Focus the first empty input
+                for (let i = 0; i < inputs.length; i++) {
                     if (inputs[i].value === "") {
                         inputs[i].focus();
                         break;
                     }
                 }
             }
-        }
-    } else {
+        } else {
             const inputs = letterInputContainer.querySelectorAll(".letter-input");
             inputs.forEach(input => {
                 input.classList.add('shake');
@@ -1064,18 +1048,19 @@ function handleInput(event) {
     }
 }
 
-        function updateGuessedLetters(guessIndex) {
-        const guess = guesses[guessIndex];
-        const solution = currentSolution.toUpperCase();
-        const inputs = letterInputContainer.querySelectorAll(".letter-input");
-    
+function updateGuessedLetters(guessIndex) {
+    const guess = guesses[guessIndex];
+    const solution = currentSolution.toUpperCase();
+    const inputs = letterInputContainer.querySelectorAll(".letter-input");
+
     // Count letter frequencies in the solution
-        const letterCounts = {};
-        for (let i = 0; i < solution.length; i++) {
+    const letterCounts = {};
+    for (let i = 0; i < solution.length; i++) {
         const letter = solution[i];
         letterCounts[letter] = (letterCounts[letter] || 0) + 1;
     }
- // First, mark correct positions
+
+    // First, mark correct positions
     for (let i = 0; i < guess.length; i++) {
         const guessLetter = guess[i].toUpperCase();
         
@@ -1099,7 +1084,8 @@ function handleInput(event) {
             inputs[i].className = "letter-input absent";
         }
     }
-     // Also update keyboard color feedback
+    
+    // Also update keyboard color feedback
     updateKeyboardColors(guess, solution);
 }
 
@@ -1143,34 +1129,23 @@ function updateKeyboardColors(guess, solution) {
         }
     }
 }
-        function showMessage(message) {
-            messageTextElement.textContent = message;
-            gameMessageElement.classList.add("show");
 
-            messageButton.onclick = () => {
-                gameMessageElement.classList.remove("show");
-                if (gameOver) {
-                    initializeGame();
-                }
-            };
-        }
+function updateSolvedCluesTable() {
+    const tableBody = document.querySelector("#solvedCluesTable tbody");
+    tableBody.innerHTML = "";
+    solvedClues.forEach(solvedClue => {
+        const row = document.createElement("tr");
+        const clueCell = document.createElement("td");
+        const answerCell = document.createElement("td");
+        clueCell.textContent = solvedClue.clue;
+        answerCell.textContent = solvedClue.answer;
+        row.appendChild(clueCell);
+        row.appendChild(answerCell);
+        tableBody.appendChild(row);
+    });
+}
 
-        function updateSolvedCluesTable() {
-            const tableBody = document.querySelector("#solvedCluesTable tbody");
-            tableBody.innerHTML = "";
-            solvedClues.forEach(solvedClue => {
-                const row = document.createElement("tr");
-                const clueCell = document.createElement("td");
-                const answerCell = document.createElement("td");
-                clueCell.textContent = solvedClue.clue;
-                answerCell.textContent = solvedClue.answer;
-                row.appendChild(clueCell);
-                row.appendChild(answerCell);
-                tableBody.appendChild(row);
-            });
-        }
-
-       function showOeuvreGuessModal() {
+function showOeuvreGuessModal() {
     oeuvreGuessModal.style.display = "flex";
     oeuvreGuessInputsContainer.innerHTML = '';
     
@@ -1264,6 +1239,14 @@ function updateKeyboardColors(guess, solution) {
         oeuvreGuessModal.style.display = "none";
     };
 }
+
+// Make sure we have the event handler for the Oeuvre input fields
+function handleOeuvreInput(event) {
+    this.value = this.value.toUpperCase();
+    if (this.value.length === 1) {
+        const currentIndex = parseInt(this.id.split('-').pop());
+        if (currentIndex < oeuvreGuessInputs.length - 1) {
+            oeuvre
 
 // Make sure we have the event handler for the Oeuvre input fields
 function handleOeuvreInput(event) {
