@@ -595,13 +595,12 @@
     <header>
         <h1>Conceits</h1>
     </header>
-
-    <div class="game-container">
-        <div class="">
-            <div class="info-box">Clue <span id="clue-number">1</span>/5</div>
-            <div class="info-box">Score: <span id="score">0</span></div>
-        </div>
-
+    
+ <div class="info-container">
+    <div class="info-box">Clue <span id="clue-number">1</span>/5</div>
+    <div class="info-box">Score: <span id="score">0</span></div>
+    <div class="info-box">Guesses: <span id="oeuvre-attempts">3</span></div>
+</div>
         <div class="clue-container">
             <div class="clue-label">Current Clue:</div>
             <div class="clue-text" id="clue-text">Finished tit, we hear (3,5)</div>
@@ -609,11 +608,7 @@
             </div>
         </div>
 
-        <div class="info-container">
-    <div class="info-box">Clue <span id="clue-number">1</span>/5</div>
-    <div class="info-box">Score: <span id="score">0</span></div>
-    <div class="info-box">Oeuvre Attempts: <span id="oeuvre-attempts">3</span></div>
-</div>
+       
         <div class="keyboard" id="keyboard">
         </div>
 
@@ -1658,26 +1653,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeButtons = document.querySelectorAll(".close-modal");
 
     if (howToPlayBtn) {
-        howToPlayBtn.addEventListener("click", () => {
-            howToPlayModal.style.display = "flex";
+          // How to Play button click handler
+    howToPlayBtn.addEventListener('click', function() {
+        howToPlayModal.style.display = 'flex';
         });
     }
 
     if (archiveBtn) {
-        archiveBtn.addEventListener("click", () => {
-            archiveModal.style.display = "flex";
+    archiveBtn.addEventListener('click', function() {
+        archiveModal.style.display = 'flex';
             loadArchivePuzzles();
         });
     }
 
-    closeButtons.forEach(button => {
-        button.addEventListener("click", (event) => {
-            const modal = event.target.closest(".modal");
-            if (modal) {
-                modal.style.display = "none";
+     closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            modal.style.display = 'none';
             }
         });
     });
+                // Click outside modal to close
+    window.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    });
+});
 });
         // Initialize the game
         initializeGame();
