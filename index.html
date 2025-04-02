@@ -58,94 +58,107 @@
         }
 
         .clue-container {
-            width: 100%;
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-            background-color: #fff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
+    width: 100%;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
 
-        .clue-label {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #34495e;
-            font-size: 1rem;
-        }
+.clue-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #34495e;
+    font-size: 1rem;
+}
 
-        .clue-text {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2c3e50;
-            text-align: center;
-            padding: 0.5rem;
-            letter-spacing: -0.02em;
-            min-height: 2.5em;
-        }
+.clue-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: center;
+    padding: 0.5rem;
+    letter-spacing: -0.02em;
+    min-height: 2.5em;
+}
 
-        .guess-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
+.guess-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
 
-        .guess-row {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-        }
+.guess-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap; /* Add this to enable wrapping */
+    padding: 0.25rem 0; /* Add some padding to separate wrapped rows */
+}
 
-        .letter-input-container {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
+.letter-input-container {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap; /* Add this to enable wrapping */
+    max-width: 100%; /* Ensure container respects parent width */
+}
 
-        .letter-input {
-            width: 3rem;
-            height: 3rem;
-            text-align: center;
-            font-size: 1.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            border: 2px solid #bdc3c7;
-            border-radius: 0.5rem;
-            background-color: #fff;
-            color: #2c3e50;
-            transition: all 0.2s ease;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-appearance: none;
-            -moz-appearance: textfield;
-        }
+.letter-input {
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 2px solid #bdc3c7;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    color: #2c3e50;
+    transition: all 0.2s ease;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    margin: 0.25rem 0; /* Add vertical margins for spacing when wrapped */
+}
 
-        .letter-input:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
-        }
+.letter-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
 
-        .letter-input.correct {
-            background-color: #2c3e50;
-            border-color: #2c3e50;
-            color: white;
-        }
+.letter-input.correct {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    color: white;
+}
 
-        .letter-input.present {
-            background-color: #2c3e50;
-            border-color: #2c3e50;
-            color: white;
-        }
+.letter-input.present {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    color: white;
+}
 
-        .letter-input.absent {
-            background-color: #2c3e50;
-            border-color: #2c3e50;
-            color: white;
-        }
+.letter-input.absent {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    color: white;
+}
 
+/* Media query for smaller screens */
+@media (max-width: 600px) {
+    .letter-input {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.5rem;
+    }
+}
         .keyboard {
             width: 100%;
             display: flex;
