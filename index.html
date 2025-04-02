@@ -737,19 +737,20 @@ function getTodaysPuzzle() {
     return null;
 }
         
-        const maxGuesses = 6;
-        const wordLength = 12;
-      let currentClueIndex = 0;
-    let currentGuess = "";
-    let guesses = [];
-    let score = 0;
-    let gameOver = false;
-    let clueRevealed = [true, false, false, false, false];
-    let solvedClues = [];
-    let currentSolution = "";
-    let oeuvreGuessAttempts = 3; // Keep 3 attempts for final guess
-    let oeuvreGuessInputs = [];
-    let skippedClues = new Set(); // Track skipped clues
+        // Update the initial variables section at the top
+const maxGuesses = 6;
+const wordLength = 12;
+let currentClueIndex = 0;
+let currentGuess = "";
+let guesses = [];
+let score = 0;
+let gameOver = false;
+let clueRevealed = [true, false, false, false, false];
+let solvedClues = [];
+let currentSolution = "";
+let oeuvreGuessAttempts = 3;
+let oeuvreGuessInputs = [];
+let skippedClues = new Set();
 
         const clueTextElement = document.getElementById("clue-text");
         const clueNumberElement = document.getElementById("clue-number");
@@ -834,13 +835,13 @@ function skipCurrentClue() {
         showMessage("Game Over! All clues have been attempted.");
     }
 }
+// Update the info container to show only relevant information
 function updateInfoContainer() {
     document.querySelector(".info-container").innerHTML = `
         <div class="info-box">Clue <span id="clue-number">${currentClueIndex + 1}</span>/${clues.length}</div>
         <div class="info-box">Score: <span id="score">${score}</span></div>
         <div class="info-box">Oeuvre Attempts: <span id="oeuvre-attempts">${oeuvreGuessAttempts}</span></div>
     `;
-}
                     
                     // Now initialize the rest of the game
                     resetGameState();
@@ -861,7 +862,7 @@ function updateInfoContainer() {
     }
 }
 
-// Update resetGameState to include new controls
+// Update the resetGameState function to use oeuvreGuessAttempts instead
 function resetGameState() {
     currentClueIndex = 0;
     currentGuess = "";
@@ -882,7 +883,6 @@ function resetGameState() {
     
     createLetterInputs();
     createKeyboard();
-    createGameControls();
     updateInfoContainer();
     
     oeuvreGuessModal.style.display = "none";
@@ -896,12 +896,13 @@ function resetGameState() {
 
 
  // If there's a puzzle date, add it
-    if (currentPuzzleDate) {
+   if (currentPuzzleDate) {
         const dateDisplay = document.createElement('div');
         dateDisplay.className = 'info-box';
         dateDisplay.textContent = `Puzzle: ${new Date(currentPuzzleDate).toLocaleDateString()}`;
         document.querySelector('.info-container').prepend(dateDisplay);
     }
+}
     
     // Clear the solved clues table
     document.querySelector("#solvedCluesTable tbody").innerHTML = "";
