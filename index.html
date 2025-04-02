@@ -999,28 +999,28 @@ function handleInput(event) {
         }
 
         function updateCurrentGuess() {
-            currentGuess = "";
-            const inputs = letterInputContainer.querySelectorAll(".letter-input");
-            inputs.forEach((input) => {
-                currentGuess += input.value;
-            });
-        }
+    currentGuess = "";
+    const inputs = letterInputContainer.querySelectorAll(".letter-input");
+    inputs.forEach((input) => {
+        currentGuess += input.value;
+    });
+}
 
-        function createKeyboard() {
-            keyboardContainer.innerHTML = '';
-            keyboardRows.forEach((rowKeys) => {
-                const row = document.createElement("div");
-                row.className = "keyboard-row";
-                rowKeys.forEach((key) => {
-                    const keyElement = document.createElement("div");
-                    keyElement.className = `key ${key === "Enter" || key === "←" ? "key-wide" : ""}`;
-                    keyElement.textContent = key;
-                    keyElement.addEventListener("click", () => handleKeyClick(key));
-                    row.appendChild(keyElement);
-                });
-                keyboardContainer.appendChild(row);
-            });
-        }
+function createKeyboard() {
+    keyboardContainer.innerHTML = '';
+    keyboardRows.forEach((rowKeys) => {
+        const row = document.createElement("div");
+        row.className = "keyboard-row";
+        rowKeys.forEach((key) => {
+            const keyElement = document.createElement("div");
+            keyElement.className = `key ${key === "Enter" || key === "←" ? "key-wide" : ""}`;
+            keyElement.textContent = key;
+            keyElement.addEventListener("click", () => handleKeyClick(key));
+            row.appendChild(keyElement);
+        });
+        keyboardContainer.appendChild(row);
+    });
+}
 
   // Update handleKeyClick to remove attempt limits for clues
 function handleKeyClick(key) {
@@ -1044,7 +1044,7 @@ function handleKeyClick(key) {
                 // Move to next clue
                 currentClueIndex++;
                 
-                // Show the Oeuvre guess modal
+                // Show the Oeuvre guess modal BEFORE updating to next clue
                 showOeuvreGuessModal();
                 
                 if (currentClueIndex < clues.length) {
@@ -1055,8 +1055,8 @@ function handleKeyClick(key) {
                     createKeyboard();
                     currentGuess = "";
                     clueNumberElement.textContent = `${currentClueIndex + 1}`;
-                    updateInfoContainer();
                 } else {
+                    // Final clue was solved - show artwork guess UI
                     gameOver = true;
                     showAllClues();
                     showMessage(`Congratulations! You solved all clues! Your final score is ${score}`);
@@ -1083,9 +1083,8 @@ function handleKeyClick(key) {
                     }
                 }
             }
-        }
-    }
-    } else {
+        } else {
+            // Incomplete guess - shake animation
             const inputs = letterInputContainer.querySelectorAll(".letter-input");
             inputs.forEach(input => {
                 input.classList.add('shake');
@@ -1098,7 +1097,6 @@ function handleKeyClick(key) {
         // Backspace functionality
         const inputs = letterInputContainer.querySelectorAll(".letter-input");
         for (let i = inputs.length - 1; i >= 0; i--) {
-            // Skip over correct letters when backspacing
             if (inputs[i].value !== "" && !inputs[i].classList.contains("correct")) {
                 inputs[i].value = "";
                 inputs[i].focus();
@@ -1110,7 +1108,6 @@ function handleKeyClick(key) {
         // Letter key functionality
         const inputs = letterInputContainer.querySelectorAll(".letter-input");
         for (let i = 0; i < inputs.length; i++) {
-            // Skip over correct letters when adding new letters
             if (inputs[i].value === "" && !inputs[i].classList.contains("correct")) {
                 inputs[i].value = key;
                 inputs[i].focus();
