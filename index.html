@@ -1002,7 +1002,7 @@ function showMessage(message, buttonText = "OK", buttonAction = null) {
     };
 }
 
-       function createLetterInputs() {
+      function createLetterInputs() {
     const solutionLength = currentSolution.length;
     letterInputContainer.innerHTML = '';
     
@@ -1031,52 +1031,7 @@ function showMessage(message, buttonText = "OK", buttonAction = null) {
     }
 }
 
-// Update the resetGameState function to properly initialize the oeuvre attempts display
-function resetGameState() {
-    // ... existing reset code ...
-    
-    // Update the oeuvre attempts display
-    document.getElementById('oeuvre-attempts').textContent = oeuvreGuessAttempts;
-    
-    // Update the puzzle date display
-    if (currentPuzzleDate) {
-        document.getElementById('puzzle-date').textContent = 
-            new Date(currentPuzzleDate).toLocaleDateString();
-    }
-
-function handleInput(event) {
-    this.value = this.value.toUpperCase();
-    if (this.value.length === 1) {
-        const currentIndex = parseInt(this.dataset.index);
-        if (currentIndex < currentSolution.length - 1) {
-            const nextInput = letterInputContainer.querySelector(`input[data-index="${currentIndex + 1}"]`);
-            nextInput.focus();
-        }
-    }
-    updateCurrentGuess();
-}
-
-        function handleKeyDown(event) {
-            if (event.key === 'Backspace') {
-                const currentIndex = parseInt(this.dataset.index);
-                if (this.value === '') {
-                    if (currentIndex > 0) {
-                        const prevInput = letterInputContainer.querySelector(`input[data-index="${currentIndex - 1}"]`);
-                        prevInput.focus();
-                    }
-                }
-            }
-        }
-
-        function updateCurrentGuess() {
-            currentGuess = "";
-            const inputs = letterInputContainer.querySelectorAll(".letter-input");
-            inputs.forEach((input) => {
-                currentGuess += input.value;
-            });
-        }
-
-       function createKeyboard() {
+function createKeyboard() {
     keyboardContainer.innerHTML = '';
     keyboardRows.forEach((rowKeys) => {
         const row = document.createElement("div");
@@ -1090,6 +1045,70 @@ function handleInput(event) {
         });
         keyboardContainer.appendChild(row);
     });
+}
+
+function handleInput(event) {
+    const input = event.target;
+    input.value = input.value.toUpperCase();
+    
+    if (input.value.length === 1) {
+        const currentIndex = parseInt(input.dataset.index);
+        if (currentIndex < currentSolution.length - 1) {
+            const nextInput = letterInputContainer.querySelector(`input[data-index="${currentIndex + 1}"]`);
+            nextInput.focus();
+        }
+    }
+    updateCurrentGuess();
+}
+
+function handleKeyDown(event) {
+    if (event.key === 'Backspace') {
+        const currentIndex = parseInt(event.target.dataset.index);
+        if (event.target.value === '') {
+            if (currentIndex > 0) {
+                const prevInput = letterInputContainer.querySelector(`input[data-index="${currentIndex - 1}"]`);
+                prevInput.focus();
+            }
+        }
+    }
+}
+
+function updateCurrentGuess() {
+    currentGuess = "";
+    const inputs = letterInputContainer.querySelectorAll(".letter-input");
+    inputs.forEach((input) => {
+        currentGuess += input.value;
+    });
+}
+
+function handleSubmitGuess() {
+    if (gameOver) return;
+
+    if (currentGuess.length === currentSolution.length) {
+        if (currentGuess.toUpperCase() === currentSolution.toUpperCase()) {
+            // Correct guess
+            score += 10;
+            scoreElement.textContent = score;
+            solvedClues.push({
+                clue: `Clue ${currentClueIndex + 1}`,
+                answer: currentGuess
+            });
+            updateSolvedCluesTable();
+            
+            // Show the Oeuvre guess modal
+            showOeuvreGuessModal();
+        } else {
+            // Wrong guess - shake effect
+            const letterInputs = letterInputContainer.querySelectorAll('.letter-input');
+            letterInputs.forEach(input => {
+                input.classList.add('shake');
+                setTimeout(() => input.classList.remove('shake'), 500);
+            });
+            showMessage("Incorrect. Try again!");
+        }
+    } else {
+        showMessage("Please complete the word before submitting.");
+    }
 }
 
     function handleKeyClick(key) {
