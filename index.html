@@ -628,17 +628,14 @@
         </div>
 
     <div class="clue-container">
-        <div class="clue-label">Current Clue:</div>
+    <div class="clue-label">Current Clue:</div>
     <div class="clue-text" id="clue-text">Finished tit, we hear (3,5)</div>
-        <div class="letter-input-container" id="letter-input-container">
-    </div>
-        <button id="skip-clue" class="action-button">Skip Clue</button>
-    </div>
+    <div class="letter-input-container" id="letter-input-container"></div>
+    <div class="keyboard" id="keyboard"></div>
+    <button id="skip-clue" class="action-button">Skip Clue</button>
+</div>
 
-        <div class="keyboard" id="keyboard">
-        </div>
-
-        <div class="game-message" id="game-message">
+    <div class="game-message" id="game-message">
             <p id="message-text"></p>
             <button id="message-button">OK</button>
         </div>
@@ -846,20 +843,51 @@ function resetGameState() {
     guesses = [];
     gameOver = false;
     clueRevealed = Array(clues.length).fill(false);
-    clueRevealed[0] = true; // Make first clue visible
+    clueRevealed[0] = true;
     oeuvreGuessAttempts = 3;
     currentClueGuessCount = 0;
-    totalRemainingGuesses = maxClueGuesses;
     score = 0;
     scoreElement.textContent = score;
+    
+    // Update info container
+    document.querySelector(".info-container").innerHTML = `
+        <div class="info-box">Clue <span id="clue-number">1</span>/${clues.length}</div>
+        <div class="info-box">Score: <span id="score">0</span></div>
+        <div class="info-box">Oeuvre Guesses Left: <span id="oeuvre-attempts">${oeuvreGuessAttempts}</span></div>
+    `;
+
+    // If there's a puzzle date, add it
+    if (currentPuzzleDate) {
+        const dateDisplay = document.createElement('div');
+        dateDisplay.className = 'info-box';
+        dateDisplay.textContent = `Puzzle: ${new Date(currentPuzzleDate).toLocaleDateString()}`;
+        document.querySelector('.info-container').prepend(dateDisplay);
+    }
+
+    // Reset clue content
     clueNumberElement.textContent = `${currentClueIndex + 1}`;
     clueTextElement.textContent = clues[currentClueIndex];
-    letterInputContainer.innerHTML = '';
     currentSolution = clueSolutions[currentClueIndex];
-    solvedClues = [];
+    
+    // Clear and recreate inputs
+    letterInputContainer.innerHTML = '';
     createLetterInputs();
+    
+    // Clear and recreate keyboard
+    keyboardContainer.innerHTML = '';
     createKeyboard();
+    
+    // Reset other game elements
+    solvedClues = [];
+    document.querySelector("#solvedCluesTable tbody").innerHTML = "";
     oeuvreGuessModal.style.display = "none";
+    
+    // Clear any existing "all clues" section
+    const allCluesSection = document.getElementById("all-clues-section");
+    if (allCluesSection) {
+        allCluesSection.remove();
+    }
+}
     
         document.querySelector(".info-container").innerHTML = `
     <div class="info-box">Clue <span id="clue-number">1</span>/${clues.length}</div>
@@ -1002,24 +1030,21 @@ function handleInput(event) {
             });
         }
 
-        function createKeyboard() {
-            keyboardContainer.innerHTML = '';
-            keyboardRows.forEach((rowKeys) => {
-                const row = document.createElement("div");
-                row.className = "keyboard-row";
-                rowKeys.forEach((key) => {
-                    const keyElement = document.createElement("div");
-                    keyElement.className = `key ${key === "Enter" || key === "←" ? "key-wide" : ""}`;
-                    keyElement.textContent = key;
-                    keyElement.addEventListener("click", () => handleKeyClick(key));
-                    row.appendChild(keyElement);
-                });
-                keyboardContainer.appendChild(row);
-            });
-        }
-
-    function handleKeyClick(key) {
-    if (gameOver) return;
+       function createKeyboard() {
+    keyboardContainer.innerHTML = '';
+    keyboardRows.forEach((rowKeys) => {
+        const row = document.createElement("div");
+        row.className = "keyboard-row";
+        rowKeys.forEach((key) => {
+            const keyElement = document.createElement("div");
+            keyElement.className = `key ${key === "Enter" || key === "←" ? "key-wide" : ""}`;
+            keyElement.textContent = key;
+            keyElement.addEventListener("click", () => handleKeyClick(key));
+            row.appendChild(keyElement);
+        });
+        keyboardContainer.appendChild(row);
+    });
+}
 
     function handleKeyClick(key) {
     if (gameOver) return;
@@ -1031,13 +1056,56 @@ function handleInput(event) {
             
             if (currentGuess.toUpperCase() === currentSolution.toUpperCase()) {
                 // Correct guess
-                handleCorrectGuess();
+                score += 10;
+                scoreElement.textContent = score;
+                solvedClues.push({
+                    clue: `Clue ${currentClueIndex + 1}`,
+                    answer: currentGuess
+                });
+                updateSolvedCluesTable();
+                
+                // Show the Oeuvre guess modal BEFORE updating to next clue
+                showOeuvreGuessModal();
+                
+                if (currentClueIndex < clues.length - 1) {
+                    moveToNextClue();
+                }
             } else {
-                // Wrong guess - no attempt limit, just show message
+                // Wrong guess - no attempt limit, just shake
+                const letterInputs = letterInputContainer.querySelectorAll('.letter-input');
+                letterInputs.forEach(input => {
+                    input.classList.add('shake');
+                    setTimeout(() => input.classList.remove('shake'), 500);
+                });
                 showMessage("Incorrect. Try again!");
             }
         }
+    } else if (key === "←") {
+        const inputs = letterInputContainer.querySelectorAll('.letter-input');
+        for (let i = inputs.length - 1; i >= 0; i--) {
+            if (inputs[i].value !== '') {
+                inputs[i].value = '';
+                inputs[i].focus();
+                break;
+            } else if (i === 0) {
+                inputs[0].focus();
+            }
+        }
+        updateCurrentGuess();
+    } else {
+        const inputs = letterInputContainer.querySelectorAll('.letter-input');
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i].value === '') {
+                inputs[i].value = key;
+                if (i < inputs.length - 1) {
+                    inputs[i + 1].focus();
+                }
+                break;
+            }
+        }
+        updateCurrentGuess();
     }
+}
                 // Move to next clue
                 currentClueIndex++;
                 
