@@ -535,21 +535,7 @@
     </div>
 
     <script>
-        const solution = "SONNET130";
-        const clues = [
-            "Finished tit, we hear (3,5)",
-            "Hiphop superhero stood? (6,4)",
-            "Eugh! That___ (wafts hand) (5)",
-            "Jet filaments (5,5)",
-            "An unreliable MC, say? (5,7)",
-        ];
-        const clueSolutions = [
-            "DUNBREAST",
-            "DAMASKROSE",
-            "REEKS",
-            "BLACKWIRES",
-            "FALSECOMPARE",
-        ];
+       
         const maxGuesses = 6;
         const wordLength = 12;
         let currentClueIndex = 0;
@@ -563,6 +549,8 @@
         let oeuvreGuessAttempts = 3;
         let oeuvreGuessInputs = [];
         let skippedClues = [];
+        let puzzlesData = null;
+        let currentPuzzleDate = null;
 
         const clueTextElement = document.getElementById("clue-text");
         const clueNumberElement = document.getElementById("clue-number");
@@ -584,23 +572,139 @@
             ["Enter", "Z", "X", "C", "V", "B", "N", "M", "←"],
         ];
 
-        function initializeGame() {
-            currentClueIndex = 0;
-            currentGuess = "";
-            guesses = [];
-            gameOver = false;
-            clueRevealed = [true, false, false, false, false];
-            oeuvreGuessAttempts = 3;
-            score = 0;
-            scoreElement.textContent = score;
-            clueNumberElement.textContent = `${currentClueIndex + 1}`;
-            clueTextElement.textContent = clues[currentClueIndex];
-            letterInputContainer.innerHTML = '';
-            currentSolution = clueSolutions[currentClueIndex];
-            createLetterInputs();
-            createKeyboard();
-            oeuvreGuessModal.style.display = "none";
+function loadPuzzlesFromJSON() {
+    return fetch('puzzles.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to load puzzles.json');
+            }
+            return response.json();
+        })
+        .then(data => {
+            puzzlesData = data;
+            return data;
+        })
+        .catch(error => {
+            console.error('Error loading puzzles:', error);
+            showMessage('Failed to load puzzles. Please try again later.');
+            return null;
+        });
+}
+function getTodaysPuzzle() {
+    if (!puzzlesData) return null;
+    
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date();
+    const dateString = today.toISOString().split('T')[0];
+    
+    // Store current puzzle date for reference
+    currentPuzzleDate = dateString;
+    
+    // Find puzzle for today's date
+    if (puzzlesData[dateString]) {
+        return puzzlesData[dateString];
+    } else {
+        // If no puzzle for today, use the first available puzzle
+        const availableDates = Object.keys(puzzlesData);
+        if (availableDates.length > 0) {
+            currentPuzzleDate = availableDates[0];
+            return puzzlesData[availableDates[0]];
         }
+    }
+    
+    return null;
+}
+        // Update initializeGame function
+function initializeGame() {
+    // Load puzzles first if not already loaded
+    if (!puzzlesData) {
+        loadPuzzlesFromJSON()
+            .then(() => {
+                const todaysPuzzle = getTodaysPuzzle();
+                if (todaysPuzzle) {
+                    solution = todaysPuzzle.solution;
+                    clues = todaysPuzzle.clues;
+                    clueSolutions = todaysPuzzle.clueSolutions;
+                    
+                    // Display puzzle date if available
+                    if (currentPuzzleDate) {
+                        document.getElementById('puzzle-date').textContent = 
+                            new Date(currentPuzzleDate).toLocaleDateString();
+                    }
+                    
+                    // Now initialize the rest of the game
+                    resetGameState();
+                } else {
+                    showMessage('No puzzle available for today. Please check back later.');
+                }
+            });
+    } else {
+        const todaysPuzzle = getTodaysPuzzle();
+        if (todaysPuzzle) {
+            solution = todaysPuzzle.solution;
+            clues = todaysPuzzle.clues;
+            clueSolutions = todaysPuzzle.clueSolutions;
+            resetGameState();
+        } else {
+            showMessage('No puzzle available for today. Please check back later.');
+        }
+    }
+}
+        
+function checkForNewPuzzle() {
+    if (puzzlesData) {
+        const today = new Date().toISOString().split('T')[0];
+        if (currentPuzzleDate !== today && puzzlesData[today]) {
+            // New puzzle available
+            showMessage("A new puzzle is available for today! Reload the game to play it.", 
+                        "Load New Puzzle", () => {
+                            currentPuzzleDate = null;
+                            initializeGame();
+                        });
+        }
+    }
+}
+/
+/ Add periodic check for new puzzles (every hour)
+setInterval(checkForNewPuzzle, 3600000);
+        
+function resetGameState() {
+    currentClueIndex = 0;
+    currentGuess = "";
+    guesses = [];
+    gameOver = false;
+    clueRevealed = Array(clues.length).fill(false);
+    clueRevealed[0] = true;
+    oeuvreGuessAttempts = 3;
+    score = 0;
+    scoreElement.textContent = score;
+    
+    // Update info container
+    document.querySelector(".info-container").innerHTML = `
+        <div class="info-box">Clue <span id="clue-number">1</span>/${clues.length}</div>
+        <div class="info-box">Score: <span id="score">0</span></div>
+        <div class="info-box">Oeuvre Guesses Left: <span id="oeuvre-attempts">${oeuvreGuessAttempts}</span></div>
+    `;
+    
+    // If there's a puzzle date, add it
+    if (currentPuzzleDate) {
+        const dateDisplay = document.createElement('div');
+        dateDisplay.className = 'info-box';
+        dateDisplay.textContent = `Puzzle: ${new Date(currentPuzzleDate).toLocaleDateString()}`;
+        document.querySelector('.info-container').prepend(dateDisplay);
+    }
+    
+    clueNumberElement.textContent = `${currentClueIndex + 1}`;
+    clueTextElement.textContent = clues[currentClueIndex];
+    currentSolution = clueSolutions[currentClueIndex];
+    
+    letterInputContainer.innerHTML = '';
+    createLetterInputs();
+    createKeyboard();
+    
+    solvedClues = [];
+    document.querySelector("#solvedCluesTable tbody").innerHTML = "";
+}
 
         function createLetterInputs() {
     const solutionLength = currentSolution.length;
@@ -793,7 +897,6 @@ function handleInput(event) {
             };
         }
 
-
         function updateSolvedCluesTable() {
             const tableBody = document.querySelector("#solvedCluesTable tbody");
             tableBody.innerHTML = "";
@@ -979,6 +1082,6 @@ function showAllClues() {
 }
         // Initialize the game
         initializeGame();
-    </script>
+  </script>
 </body>
 </html>
