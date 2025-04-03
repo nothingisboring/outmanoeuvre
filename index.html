@@ -382,9 +382,10 @@
             </div>
         </div>
     </div>
-<script>
+
 <!-- Place this right before the closing </body> tag -->
 <script>
+
 document.addEventListener('DOMContentLoaded', () => {
     // Game state
     const state = {
@@ -394,7 +395,28 @@ document.addEventListener('DOMContentLoaded', () => {
         solution: {
             words: ['TOTHE', 'LIGHTHOUSE'],
             type: '📚'
-        }
+        },
+        clues: [
+            'He reached Q.',
+            'Who else felt sorry for the fish with a square hole in its side?',
+            'The boeuf en daube was a success.',
+            'The house fell apart as time passed.',
+            'The painter is a flower and her subject framed by a window.'
+        ]
+    };
+
+    const elements = {
+        clueNumber: document.getElementById('clue-number'),
+        score: document.getElementById('score'),
+        attemptsLeft: document.getElementById('attempts-left'),
+        clueContainer: document.getElementById('clue-container'),
+        clueText: document.getElementById('clue-text'),
+        oeuvreType: document.getElementById('oeuvre-type'),
+        submitButton: document.getElementById('submit-guess'),
+        howToPlayBtn: document.getElementById('how-to-play-btn'),
+        archiveBtn: document.getElementById('archive-btn'),
+        modals: document.querySelectorAll('.modal'),
+        closeModals: document.querySelectorAll('.close-modal')
     };
 
     // Input handling functions
@@ -492,180 +514,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function checkGuess() {
-        const inputs = document.querySelectorAll('.letter-input');
-        let guess = '';
-        inputs.forEach(input => guess += input.value);
-        
-        const solution = state.solution.words.join('');
-        
-        if (guess === solution) {
-            // Calculate score based on current clue
-            const points = Math.max(120 - (state.currentClue * 20), 20);
-            state.score += points;
-            alert(`Correct! You scored ${points} points!`);
-        } else {
-            state.attempts--;
-            if (state.attempts === 0) {
-                alert('Game Over! No more attempts remaining.');
-            } else {
-                alert(`Incorrect! ${state.attempts} attempts remaining.`);
-            }
-        }
-        
-        updateDisplay();
-    }
-
-    function updateDisplay() {
-        document.getElementById('clue-number').textContent = state.currentClue;
-        document.getElementById('score').textContent = state.score;
-        document.getElementById('attempts-left').textContent = state.attempts;
-    }
-
-    function initializeGame() {
-        createAnswerBoxes();
-        updateDisplay();
-        
-        // Add submit button event listener
-        document.getElementById('submit-guess').addEventListener('click', checkGuess);
-    }
-
-    // Initialize the game
-    initializeGame();
-});
-
-
-</body>
-<script type="text/javascript" charset="utf-8">
-  
-document.addEventListener('DOMContentLoaded', () => {
-    // Game state
-    const state = {
-        currentClue: 1,
-        attempts: 5,
-        score: 0,
-        solution: {
-            words: ['TOTHE', 'LIGHTHOUSE'],
-            type: '📚'
-        }
-    };
-        clues: [
-            'He reached Q.',
-            'Who else felt sorry for the fish with a square hole in its side?',
-            'The boeuf en daube was a success.',
-            'The house fell apart.',
-            'The painter is a flower and her subject framed by a window.'
-        ]
-    };
-
-    const elements = {
-        clueNumber: document.getElementById('clue-number'),
-        score: document.getElementById('score'),
-        attemptsLeft: document.getElementById('attempts-left'),
-        clueContainer: document.getElementById('clue-container'),
-        clueText: document.getElementById('clue-text'),
-        oeuvreType: document.getElementById('oeuvre-type'),
-        answerContainer: document.getElementById('answer-container'),
-        submitButton: document.getElementById('submit-guess'),
-        howToPlayBtn: document.getElementById('how-to-play-btn'),
-        archiveBtn: document.getElementById('archive-btn'),
-        modals: document.querySelectorAll('.modal'),
-        closeModals: document.querySelectorAll('.close-modal')
-    };
-
-    function initializeGame() {
-        // Set initial game state
-        updateInfoDisplay();
-        createAnswerBoxes();
-        setupEventListeners();
-        showOeuvreType();
-    }
-
-    // Replace the createAnswerBoxes function in your game.js
-function createAnswerBoxes() {
-    const row1 = document.getElementById('row1');
-    const row2 = document.getElementById('row2');
-    
-    // Clear existing boxes
-    row1.innerHTML = '';
-    row2.innerHTML = '';
-    
-    // Create first row (TO THE - 5 letters)
-    for (let i = 0; i < 5; i++) {
-        const input = createLetterInput(0, i);
-        row1.appendChild(input);
-    }
-    
-    // Create second row (LIGHTHOUSE - 10 letters)
-    for (let i = 0; i < 10; i++) {
-        const input = createLetterInput(1, i);
-        row2.appendChild(input);
-    }
-}
-
-function createLetterInput(rowIndex, letterIndex) {
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.maxLength = 1;
-    input.className = 'letter-input';
-    input.setAttribute('data-row', rowIndex);
-    input.setAttribute('data-index', letterIndex);
-    
-    // Add input event listeners
-    input.addEventListener('input', handleInput);
-    input.addEventListener('keydown', handleKeyDown);
-    
-    return input;
-}
-
-    function handleInput(e) {
-    const input = e.target;
-    input.value = input.value.toUpperCase();
-    
-    if (input.value.length === 1) {
-        const nextInput = findNextInput(input);
-        if (nextInput) nextInput.focus();
-    }
-}
-
-function findNextInput(currentInput) {
-    const currentRow = currentInput.getAttribute('data-row');
-    const currentIndex = parseInt(currentInput.getAttribute('data-index'));
-    
-    let nextInput;
-    
-    if (currentRow === '0' && currentIndex === 4) {
-        // End of first row, move to second row
-        nextInput = document.querySelector(`input[data-row="1"][data-index="0"]`);
-    } else {
-        // Move to next input in current row
-        nextInput = document.querySelector(
-            `input[data-row="${currentRow}"][data-index="${currentIndex + 1}"]`
-        );
-    }
-    
-    return nextInput;
-}
-
-function findPreviousInput(currentInput) {
-    const currentRow = currentInput.getAttribute('data-row');
-    const currentIndex = parseInt(currentInput.getAttribute('data-index'));
-    
-    let prevInput;
-    
-    if (currentRow === '1' && currentIndex === 0) {
-        // Start of second row, move to end of first row
-        prevInput = document.querySelector(`input[data-row="0"][data-index="4"]`);
-    } else {
-        // Move to previous input in current row
-        prevInput = document.querySelector(
-            `input[data-row="${currentRow}"][data-index="${currentIndex - 1}"]`
-        );
-    }
-    
-    return prevInput;
-}
-
     function updateInfoDisplay() {
         elements.clueNumber.textContent = state.currentClue;
         elements.score.textContent = state.score;
@@ -747,8 +595,18 @@ function findPreviousInput(currentInput) {
         });
     }
 
+    function initializeGame() {
+        createAnswerBoxes();
+        updateInfoDisplay();
+        setupEventListeners();
+        showOeuvreType();
+    }
+
     // Initialize the game
     initializeGame();
 });
 </script>
+
+</body>
+
 </html>
