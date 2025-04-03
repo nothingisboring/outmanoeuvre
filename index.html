@@ -1,5 +1,3 @@
-Latest good clean iteration of Oeuvre with clue reveal at end
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,6 +96,37 @@ Latest good clean iteration of Oeuvre with clue reveal at end
             justify-content: center;
             gap: 0.5rem;
         }
+        
+        .button-row {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+      .action-button {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background-color: #7f8c8d;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+      .action-button:hover {
+    background-color: #95a5a6;
+    transform: scale(1.05);
+}
+
+      .action-button:active {
+    transform: scale(1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
 
         .letter-input-container {
             display: flex;
@@ -453,6 +482,8 @@ Latest good clean iteration of Oeuvre with clue reveal at end
             <div class="clue-text" id="clue-text">Finished tit, we hear (3,5)</div>
             <div class="letter-input-container" id="letter-input-container">
             </div>
+            <div class="button-row"><button id="skip-clue" class="action-button">Skip Clue</button>
+</div>
         </div>
 
         <div class="keyboard" id="keyboard">
@@ -511,6 +542,7 @@ Latest good clean iteration of Oeuvre with clue reveal at end
         let currentSolution = "";
         let oeuvreGuessAttempts = 3;
         let oeuvreGuessInputs = [];
+        let skippedClues = [];
 
         const clueTextElement = document.getElementById("clue-text");
         const clueNumberElement = document.getElementById("clue-number");
@@ -569,6 +601,30 @@ Latest good clean iteration of Oeuvre with clue reveal at end
     }
 }
 
+document.getElementById('skip-clue').addEventListener('click', function() {
+    if (gameOver) return;
+    
+    skippedClues.push(currentClueIndex);
+    moveToNextClue();
+});
+
+function moveToNextClue() {
+    currentClueIndex++;
+    if (currentClueIndex < clues.length) {
+        currentSolution = clueSolutions[currentClueIndex];
+        clueTextElement.textContent = clues[currentClueIndex];
+        clueNumberElement.textContent = `${currentClueIndex + 1}`;
+        letterInputContainer.innerHTML = '';
+        currentGuess = "";
+        createLetterInputs();
+        createKeyboard();
+    } else {
+        // No more clues, show final oeuvre guess
+        showOeuvreGuessModal();
+    }
+}
+
+
 function handleInput(event) {
     this.value = this.value.toUpperCase();
     if (this.value.length === 1) {
@@ -618,88 +674,77 @@ function handleInput(event) {
         }
 
         function handleKeyClick(key) {
-            if (gameOver) return;
+    if (gameOver) return;
 
-            if (key === "Enter") {
-                const solutionLength = currentSolution.length;
-                if (currentGuess.length === solutionLength) {
-                    guesses.push(currentGuess);
-                    updateGuessedLetters(guesses.length - 1);
+    if (key === "Enter") {
+        const solutionLength = currentSolution.length;
+        if (currentGuess.length === solutionLength) {
+            guesses.push(currentGuess);
+            updateGuessedLetters(guesses.length - 1);
 
-                    if (currentClueIndex < clues.length - 1)
-                    {
-                        if (currentGuess.toUpperCase() === currentSolution.toUpperCase())
-                        {
-                            score += 10;
-                            scoreElement.textContent = score;
-                            solvedClues.push({
-                                clue: `Clue ${currentClueIndex + 1}`,
-                                answer: currentGuess
-                            });
-                            updateSolvedCluesTable();
-                            currentClueIndex++;
-                            currentSolution = (currentClueIndex < 5) ? clueSolutions[currentClueIndex] : solution;
-                            clueTextElement.textContent = clues[currentClueIndex];
-                            letterInputContainer.innerHTML = '';
-                            createLetterInputs();
-                            createKeyboard();
-                            currentGuess = "";
-                            clueNumberElement.textContent = `${currentClueIndex + 1}`;
-                            oeuvreGuessAttempts = 3;
-                            showOeuvreGuessModal(); // Show the Oeuvre guess modal
-                        }
-                        else{
-                            showMessage(`Incorrect Guess! The solution was ${currentSolution}.`);
-                        }
-                    }
-                    else if (currentClueIndex === clues.length - 1) {
-    if (currentGuess.toUpperCase() === currentSolution.toUpperCase()) {
-        score += 50;
-        scoreElement.textContent = score;
-        solvedClues.push({
-            clue: `Artwork`,
-            answer: currentGuess
-        });
-        updateSolvedCluesTable();
-        gameOver = true;
-        showAllClues(); // Show all clues section
-        showMessage(`Congratulations! You guessed the artwork! Your final score is ${score}`);
-    }
-    else{
-        showMessage(`Incorrect Guess! The solution was ${currentSolution}.`);
-    }
-}
+            if (currentGuess.toUpperCase() === currentSolution.toUpperCase()) {
+                // Correct guess
+                score += 10;
+                scoreElement.textContent = score;
+                solvedClues.push({
+                    clue: `Clue ${currentClueIndex + 1}`,
+                    answer: currentGuess
+                });
+                updateSolvedCluesTable();
+                
+                // Show the Oeuvre guess modal
+                showOeuvreGuessModal();
+                
+                if (currentClueIndex < clues.length - 1) {
+                    moveToNextClue();
                 } else {
-                    const inputs = letterInputContainer.querySelectorAll(".letter-input");
-                    inputs.forEach(input => {
-                            input.classList.add('shake');
-                            setTimeout(()=> {
-                                input.classList.remove('shake')
-                            }, 500)
-                    })
+                    // Last clue solved
+                    score += 50;
+                    scoreElement.textContent = score;
+                    gameOver = true;
+                    showAllClues();
+                    showMessage(`Congratulations! You've completed all clues! Your final score is ${score}`);
                 }
-            } else if (key === "←") {
-                    const inputs = letterInputContainer.querySelectorAll(".letter-input");
-                    for (let i = inputs.length - 1; i >= 0; i--) {
-                        if (inputs[i].value !== "") {
-                            inputs[i].value = "";
-                            inputs[i].focus();
-                            break;
-                        }
-                    }
-                    updateCurrentGuess();
-            } else if (key.length === 1 && key.match(/[A-Z]/)) {
-                    const inputs = letterInputContainer.querySelectorAll(".letter-input");
-                    for (let i = 0; i < inputs.length; i++) {
-                        if (inputs[i].value === "") {
-                            inputs[i].value = key;
-                            inputs[i].focus();
-                            break;
-                        }
-                    }
-                    updateCurrentGuess();
+            } else {
+                // Wrong guess - just shake, no attempt limit
+                const letterInputs = letterInputContainer.querySelectorAll('.letter-input');
+                letterInputs.forEach(input => {
+                    input.classList.add('shake');
+                    setTimeout(() => input.classList.remove('shake'), 500);
+                });
+                showMessage("Incorrect. Try again!");
+            }
+        } else {
+            const inputs = letterInputContainer.querySelectorAll(".letter-input");
+            inputs.forEach(input => {
+                input.classList.add('shake');
+                setTimeout(() => {
+                    input.classList.remove('shake')
+                }, 500)
+            })
+        }
+    } else if (key === "←") {
+        const inputs = letterInputContainer.querySelectorAll(".letter-input");
+        for (let i = inputs.length - 1; i >= 0; i--) {
+            if (inputs[i].value !== "") {
+                inputs[i].value = "";
+                inputs[i].focus();
+                break;
             }
         }
+        updateCurrentGuess();
+    } else if (key.length === 1 && key.match(/[A-Z]/)) {
+        const inputs = letterInputContainer.querySelectorAll(".letter-input");
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i].value === "") {
+                inputs[i].value = key;
+                inputs[i].focus();
+                break;
+            }
+        }
+        updateCurrentGuess();
+    }
+}
 
         function updateGuessedLetters(guessIndex) {
             const guess = guesses[guessIndex];
@@ -727,6 +772,7 @@ function handleInput(event) {
                 }
             };
         }
+
 
         function updateSolvedCluesTable() {
             const tableBody = document.querySelector("#solvedCluesTable tbody");
@@ -779,6 +825,15 @@ function handleInput(event) {
             answer: clueSolutions[i]
         });
     }
+    
+    // Add this right after your other event listeners (near initializeGame call)
+document.getElementById('skip-clue').addEventListener('click', function() {
+    if (!gameOver) {
+        skippedClues.push(currentClueIndex);
+        moveToNextClue();
+    }
+});
+
     
     // Add the final solution
     solvedClues.push({
