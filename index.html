@@ -383,37 +383,21 @@
         </div>
     </div>
 <script>
+<!-- Place this right before the closing </body> tag -->
+<script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Create letter input boxes immediately for both rows
-    const row1 = document.getElementById('row1');
-    const row2 = document.getElementById('row2');
-    
-    // First row (TO THE - 5 letters)
-    for (let i = 0; i < 5; i++) {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.maxLength = 1;
-        input.className = 'letter-input';
-        input.setAttribute('data-row', '0');
-        input.setAttribute('data-index', i);
-        input.addEventListener('input', handleInput);
-        input.addEventListener('keydown', handleKeyDown);
-        row1.appendChild(input);
-    }
-    
-    // Second row (LIGHTHOUSE - 10 letters)
-    for (let i = 0; i < 10; i++) {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.maxLength = 1;
-        input.className = 'letter-input';
-        input.setAttribute('data-row', '1');
-        input.setAttribute('data-index', i);
-        input.addEventListener('input', handleInput);
-        input.addEventListener('keydown', handleKeyDown);
-        row2.appendChild(input);
-    }
+    // Game state
+    const state = {
+        currentClue: 1,
+        attempts: 5,
+        score: 0,
+        solution: {
+            words: ['TOTHE', 'LIGHTHOUSE'],
+            type: '📚'
+        }
+    };
 
+    // Input handling functions
     function handleInput(e) {
         const input = e.target;
         input.value = input.value.toUpperCase();
@@ -471,22 +455,100 @@ document.addEventListener('DOMContentLoaded', () => {
         
         return prevInput;
     }
+
+    function createLetterInput(rowIndex, letterIndex) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 1;
+        input.className = 'letter-input';
+        input.setAttribute('data-row', rowIndex);
+        input.setAttribute('data-index', letterIndex);
+        
+        // Add input event listeners
+        input.addEventListener('input', handleInput);
+        input.addEventListener('keydown', handleKeyDown);
+        
+        return input;
+    }
+
+    function createAnswerBoxes() {
+        const row1 = document.getElementById('row1');
+        const row2 = document.getElementById('row2');
+        
+        // Clear existing boxes
+        row1.innerHTML = '';
+        row2.innerHTML = '';
+        
+        // Create first row (TOTHE - 5 letters)
+        for (let i = 0; i < 5; i++) {
+            const input = createLetterInput(0, i);
+            row1.appendChild(input);
+        }
+        
+        // Create second row (LIGHTHOUSE - 10 letters)
+        for (let i = 0; i < 10; i++) {
+            const input = createLetterInput(1, i);
+            row2.appendChild(input);
+        }
+    }
+
+    function checkGuess() {
+        const inputs = document.querySelectorAll('.letter-input');
+        let guess = '';
+        inputs.forEach(input => guess += input.value);
+        
+        const solution = state.solution.words.join('');
+        
+        if (guess === solution) {
+            // Calculate score based on current clue
+            const points = Math.max(120 - (state.currentClue * 20), 20);
+            state.score += points;
+            alert(`Correct! You scored ${points} points!`);
+        } else {
+            state.attempts--;
+            if (state.attempts === 0) {
+                alert('Game Over! No more attempts remaining.');
+            } else {
+                alert(`Incorrect! ${state.attempts} attempts remaining.`);
+            }
+        }
+        
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        document.getElementById('clue-number').textContent = state.currentClue;
+        document.getElementById('score').textContent = state.score;
+        document.getElementById('attempts-left').textContent = state.attempts;
+    }
+
+    function initializeGame() {
+        createAnswerBoxes();
+        updateDisplay();
+        
+        // Add submit button event listener
+        document.getElementById('submit-guess').addEventListener('click', checkGuess);
+    }
+
+    // Initialize the game
+    initializeGame();
 });
-</script>
+
 
 </body>
 <script type="text/javascript" charset="utf-8">
   
-
 document.addEventListener('DOMContentLoaded', () => {
+    // Game state
     const state = {
         currentClue: 1,
         attempts: 5,
         score: 0,
         solution: {
-            words: ['TO', 'THE', 'LIGHTHOUSE'],
-            type: '📚'  // Book emoji
-        },
+            words: ['TOTHE', 'LIGHTHOUSE'],
+            type: '📚'
+        }
+    };
         clues: [
             'He reached Q.',
             'Who else felt sorry for the fish with a square hole in its side?',
