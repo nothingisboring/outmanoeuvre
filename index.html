@@ -1775,12 +1775,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize game
     initializeGame();
     
-    // How to Play button handler
+    // Button handlers
+    document.getElementById('submit-guess').addEventListener('click', handleSubmitGuess);
+    document.getElementById('skip-clue').addEventListener('click', function() {
+        if (!gameOver) {
+            skippedClues.push(currentClueIndex);
+            moveToNextClue();
+        }
+    });
+
+    // Modal handlers
     document.getElementById('how-to-play-btn').addEventListener('click', () => {
         document.getElementById('how-to-play-modal').style.display = 'flex';
     });
 
-    // Archive button handler
     document.getElementById('archive-btn').addEventListener('click', () => {
         document.getElementById('archive-modal').style.display = 'flex';
     });
@@ -1792,10 +1800,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-     // Submit guess button handler
-    document.getElementById('submit-guess').addEventListener('click', () => {
-        handleSubmitGuess();
+    // Click outside modal to close
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
     });
+
+    // Check for new puzzles periodically
+    setInterval(checkForNewPuzzle, 3600000); // 1 hour
+});
 
     function handleSubmitGuess() {
     if (gameOver) return;
@@ -1835,11 +1851,7 @@ document.addEventListener('DOMContentLoaded', () => {
             moveToNextClue();
         }
     });
-
-      // Check for new puzzles periodically
-    setInterval(checkForNewPuzzle, 3600000); // 1 hour
-});
-    
+   
     // Make sure modal elements exist in the DOM
     if (!document.getElementById("how-to-play-modal")) {
         const howToPlayModal = document.createElement("div");
