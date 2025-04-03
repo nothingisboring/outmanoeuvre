@@ -716,6 +716,8 @@
         let clueSolutions = [];
         let puzzlesData = null;
         let currentPuzzleDate = null;
+        let skippedClues = [];
+        let oeuvreGuessAttempts = 3; // Initialize oeuvre guess attempts
         
         // Function to load puzzles from JSON file
 function loadPuzzlesFromJSON() {
@@ -860,10 +862,33 @@ function resetGameState() {
     oeuvreGuessModal.style.display = "none";
     
         document.querySelector(".info-container").innerHTML = `
-        <div class="info-box">Clue <span id="clue-number">1</span>/${clues.length}</div>
-        <div class="info-box">Score: <span id="score">0</span></div>
-        <div class="info-box">Attempts left: <span id="attempts-left">${totalRemainingGuesses}</span></div>
-    `;
+    <div class="info-box">Clue <span id="clue-number">1</span>/${clues.length}</div>
+    <div class="info-box">Score: <span id="score">0</span></div>
+    <div class="info-box">Oeuvre Guesses Left: <span id="oeuvre-attempts">${oeuvreGuessAttempts}</span></div>
+`;
+}
+
+        document.getElementById('skip-clue').addEventListener('click', function() {
+    if (gameOver) return;
+    
+    skippedClues.push(currentClueIndex);
+    moveToNextClue();
+});
+
+function moveToNextClue() {
+    currentClueIndex++;
+    if (currentClueIndex < clues.length) {
+        currentSolution = clueSolutions[currentClueIndex];
+        clueTextElement.textContent = clues[currentClueIndex];
+        clueNumberElement.textContent = `${currentClueIndex + 1}`;
+        letterInputContainer.innerHTML = '';
+        createLetterInputs();
+        createKeyboard();
+        currentGuess = "";
+    } else {
+        // No more clues, show final oeuvre guess
+        showOeuvreGuessModal();
+    }
 }
 
  // If there's a puzzle date, add it
@@ -996,21 +1021,23 @@ function handleInput(event) {
     function handleKeyClick(key) {
     if (gameOver) return;
 
+    function handleKeyClick(key) {
+    if (gameOver) return;
+
     if (key === "Enter") {
         const solutionLength = currentSolution.length;
         if (currentGuess.length === solutionLength) {
             guesses.push(currentGuess);
             
             if (currentGuess.toUpperCase() === currentSolution.toUpperCase()) {
-                // Correct guess - proceed as before
-                score += 10;
-                scoreElement.textContent = score;
-                solvedClues.push({
-                    clue: `Clue ${currentClueIndex + 1}`,
-                    answer: currentGuess
-                });
-                updateSolvedCluesTable();
-                
+                // Correct guess
+                handleCorrectGuess();
+            } else {
+                // Wrong guess - no attempt limit, just show message
+                showMessage("Incorrect. Try again!");
+            }
+        }
+    }
                 // Move to next clue
                 currentClueIndex++;
                 
@@ -1212,9 +1239,50 @@ function updateKeyboardColors(guess, solution) {
             });
         }
 
-       function showOeuvreGuessModal() {
+     function showOeuvreGuessModal() {
+     if (oeuvreGuessAttempts <= 0) {
+        endGame(false);
+        return;
+    }
+
+    const guessValue = getOeuvreGuessValue();
+    
+    if (guessValue.toUpperCase() === solution.toUpperCase()) {
+        // Correct guess
+        score += calculateOeuvreBonus();
+        scoreElement.textContent = score;
+        endGame(true);
+    } else {
+        // Wrong guess
+        oeuvreGuessAttempts--;
+        document.getElementById('oeuvre-attempts').textContent = oeuvreGuessAttempts;
+        
+        if (oeuvreGuessAttempts <= 0) {
+            endGame(false);
+        } else {
+            showMessage(`Incorrect guess. ${oeuvreGuessAttempts} attempts remaining.`);
+        }
+    }
+}
+function endGame(won) {
+    gameOver = true;
+    oeuvreGuessModal.style.display = "none";
+    
+    if (won) {
+        showMessage(`Congratulations! You solved it with a score of ${score}!`);
+    } else {
+        showMessage(`Game Over! The oeuvre was: ${solution}. Final score: ${score}`);
+    }
+}
+
+        
+        
     oeuvreGuessModal.style.display = "flex";
-    oeuvreGuessInputsContainer.innerHTML = '';
+    document.getElementById('oeuvre-attempts').textContent = oeuvreGuessAttempts;
+    
+    // Create input fields for oeuvre guess
+    createOeuvreGuessInputs();
+}
     
     // Update modal title to include clue number
     const modalTitle = oeuvreGuessContent.querySelector("h2");
@@ -1351,6 +1419,17 @@ function handleKeyDown(event) {
             }
         }
     }
+}
+
+function calculateOeuvreBonus() {
+    const solvedCount = solvedClues.length;
+    const skippedCount = skippedClues.length;
+    const totalClues = clues.length;
+    
+    // More bonus points for solving with fewer clues
+    const baseBonus = 50;
+    const bonusMultiplier = (totalClues - solvedCount - skippedCount) / totalClues;
+    return Math.floor(baseBonus * bonusMultiplier);
 }
 
 function showAllClues() {
