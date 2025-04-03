@@ -988,11 +988,7 @@ function checkForNewPuzzle() {
 document.addEventListener('DOMContentLoaded', () => {
     initializeGame();
     
-    // Optional: Check for new puzzles periodically (e.g., once every hour)
-    setInterval(checkForNewPuzzle, 3600000); // 1 hour
-});
-
-// Update the showMessage function to support custom button text and action
+   // Update the showMessage function to support custom button text and action
 function showMessage(message, buttonText = "OK", buttonAction = null) {
     messageTextElement.textContent = message;
     messageButton.textContent = buttonText;
@@ -1008,30 +1004,47 @@ function showMessage(message, buttonText = "OK", buttonAction = null) {
     };
 }
 
-        function createLetterInputs() {
+       function createLetterInputs() {
     const solutionLength = currentSolution.length;
     letterInputContainer.innerHTML = '';
+    
     for (let i = 0; i < solutionLength; i++) {
         const input = document.createElement("input");
         input.type = "text";
         input.maxLength = "1";
         input.className = "letter-input";
         input.dataset.index = i;
+        
         input.addEventListener("input", handleInput);
-        input.addEventListener("keydown", handleKeyDown);
-        input.addEventListener("click", function() {
-            // Only allow click focusing if the box isn't marked as correct
-            if (!this.classList.contains("correct")) {
-                this.focus();
+        input.addEventListener("keydown", (event) => {
+            if (event.key === 'Enter') {
+                handleSubmitGuess();
+            } else {
+                handleKeyDown(event);
             }
         });
+        
         letterInputContainer.appendChild(input);
     }
-    // Focus the first input when created
+    
+    // Focus the first input
     if (solutionLength > 0) {
         letterInputContainer.querySelector("input[data-index='0']").focus();
     }
 }
+
+// Update the resetGameState function to properly initialize the oeuvre attempts display
+function resetGameState() {
+    // ... existing reset code ...
+    
+    // Update the oeuvre attempts display
+    document.getElementById('oeuvre-attempts').textContent = oeuvreGuessAttempts;
+    
+    // Update the puzzle date display
+    if (currentPuzzleDate) {
+        document.getElementById('puzzle-date').textContent = 
+            new Date(currentPuzzleDate).toLocaleDateString();
+    }
 
 function handleInput(event) {
     this.value = this.value.toUpperCase();
@@ -1741,19 +1754,74 @@ function loadPuzzleByDate(dateString) {
     }
 }
 
-// Add event listeners when the document is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Add the button container after the header
-    const header = document.querySelector("header");
-    if (header && !document.querySelector(".button-container")) {
-        const buttonContainer = document.createElement("div");
-        buttonContainer.className = "button-container";
-        buttonContainer.innerHTML = `
-            <button id="how-to-play-btn" class="action-button">How to Play</button>
-            <button id="archive-btn" class="action-button">Archive</button>
-        `;
-        header.after(buttonContainer);
+    // Initialize game
+    initializeGame();
+    
+    // How to Play button handler
+    document.getElementById('how-to-play-btn').addEventListener('click', () => {
+        document.getElementById('how-to-play-modal').style.display = 'flex';
+    });
+
+    // Archive button handler
+    document.getElementById('archive-btn').addEventListener('click', () => {
+        document.getElementById('archive-modal').style.display = 'flex';
+    });
+
+    // Close modal handlers
+    document.querySelectorAll('.close-modal').forEach(closeBtn => {
+        closeBtn.addEventListener('click', (e) => {
+            e.target.closest('.modal').style.display = 'none';
+        });
+    });
+
+     // Submit guess button handler
+    document.getElementById('submit-guess').addEventListener('click', () => {
+        handleSubmitGuess();
+    });
+
+    function handleSubmitGuess() {
+    if (gameOver) return;
+
+    if (currentGuess.length === currentSolution.length) {
+        if (currentGuess.toUpperCase() === currentSolution.toUpperCase()) {
+            // Correct guess
+            score += 10;
+            scoreElement.textContent = score;
+            solvedClues.push({
+                clue: `Clue ${currentClueIndex + 1}`,
+                answer: currentGuess
+            });
+            updateSolvedCluesTable();
+            
+            // Show the Oeuvre guess modal
+            showOeuvreGuessModal();
+        } else {
+            // Wrong guess - shake effect
+            const letterInputs = letterInputContainer.querySelectorAll('.letter-input');
+            letterInputs.forEach(input => {
+                input.classList.add('shake');
+                setTimeout(() => input.classList.remove('shake'), 500);
+            });
+            showMessage("Incorrect. Try again!");
+        }
+    } else {
+        showMessage("Please complete the word before submitting.");
     }
+}
+
+
+    // Skip clue button handler
+    document.getElementById('skip-clue').addEventListener('click', () => {
+        if (!gameOver) {
+            skippedClues.push(currentClueIndex);
+            moveToNextClue();
+        }
+    });
+
+      // Check for new puzzles periodically
+    setInterval(checkForNewPuzzle, 3600000); // 1 hour
+});
     
     // Make sure modal elements exist in the DOM
     if (!document.getElementById("how-to-play-modal")) {
