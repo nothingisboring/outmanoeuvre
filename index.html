@@ -57,14 +57,17 @@
             text-align: center;
         }
 
-        .clue-container {
-            width: 100%;
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-            background-color: #fff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
+       .clue-container {
+    width: 100%;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box; /* Add this to include padding in width calculation */
+    overflow-wrap: break-word; /* Ensure long words don't overflow */
+    word-wrap: break-word;
+}
 
         .clue-label {
             font-weight: 600;
@@ -128,30 +131,34 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-        .letter-input-container {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
+       .letter-input-container {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap; /* Add this to enable wrapping */
+    max-width: 100%; /* Ensure container respects parent width */
+    padding: 0 1rem; /* Add some padding for better spacing */
+}
 
-        .letter-input {
-            width: 3rem;
-            height: 3rem;
-            text-align: center;
-            font-size: 1.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            border: 2px solid #bdc3c7;
-            border-radius: 0.5rem;
-            background-color: #fff;
-            color: #2c3e50;
-            transition: all 0.2s ease;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-appearance: none;
-            -moz-appearance: textfield;
-        }
+       .letter-input {
+    width: 2.5rem; /* Slightly reduce size for better fit */
+    height: 2.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 2px solid #bdc3c7;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    color: #2c3e50;
+    transition: all 0.2s ease;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    margin: 0.25rem 0; /* Add vertical margins for spacing when wrapped */
+}
 
         .letter-input:focus {
             outline: none;
@@ -176,7 +183,15 @@
             border-color: #2c3e50;
             color: white;
         }
-
+        
+/* Add responsive styles for smaller screens */
+@media (max-width: 600px) {
+    .letter-input {
+        width: 2rem;
+        height: 2rem;
+        font-size: 1.25rem;
+    }
+}
         .keyboard {
             width: 100%;
             display: flex;
