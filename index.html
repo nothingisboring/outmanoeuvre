@@ -107,17 +107,15 @@
     margin-top: 1rem;
 }
 
-.guess-section {
+.guess-container {
     width: 100%;
-    max-width: 600px;
-    background-color: #fff;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    padding: 1.25rem;
-    margin-top: 1rem;
     display: flex;
     flex-direction: column;
+    gap: 1.25rem;  /* Increased from 1rem */
     align-items: center;
+    margin-top: 0.75rem;  /* Add some space after the label */
+    margin-bottom: 1rem;
+
 }
 
 .guess-container {
@@ -135,6 +133,20 @@
     justify-content: center;
     flex-wrap: wrap;
 }
+
+ .correct-letter {
+        background-color: #d4edda;
+        color: #155724;
+        border-color: #c3e6cb;
+        font-weight: bold;
+    }
+
+.guess-label {
+    margin-bottom: 1.25rem;  /* Increased from default */
+    font-weight: 600;
+    color: #34495e;
+    font-size: 1rem;
+}    
 
 .submit-button {
     margin: 1rem auto 0;
@@ -170,6 +182,8 @@
     transition: all 0.2s ease;
     padding: 0;
 }
+
+
 
 /* Mobile responsive styles */
 @media (max-width: 480px) {
@@ -339,10 +353,11 @@
 
     <div class="button-container">
         <button id="how-to-play-btn" class="action-button">How to Play</button>
+        <button id="mode-toggle" class="action-button">EASY MODE</button>
         <button id="archive-btn" class="action-button">Archive</button>
     </div>
-
-    <!-- How to Play Modal -->
+    
+       <!-- How to Play Modal -->
     <div id="how-to-play-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -385,13 +400,13 @@
 
 <!-- Place this right before the closing </body> tag -->
 <script>
-
 document.addEventListener('DOMContentLoaded', () => {
     // Game state
     const state = {
         currentClue: 1,
         attempts: 5,
         score: 0,
+        easyMode: false, // Add a flag for easy mode
         solution: {
             words: ['TOTHE', 'LIGHTHOUSE'],
             type: '📚'
@@ -400,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'He reached Q.',
             'Who else felt sorry for the fish with a square hole in its side?',
             'The boeuf en daube was a success.',
-            'The house fell apart as time passed.',
+            'The house fell apart.',
             'The painter is a flower and her subject framed by a window.'
         ]
     };
@@ -416,7 +431,8 @@ document.addEventListener('DOMContentLoaded', () => {
         howToPlayBtn: document.getElementById('how-to-play-btn'),
         archiveBtn: document.getElementById('archive-btn'),
         modals: document.querySelectorAll('.modal'),
-        closeModals: document.querySelectorAll('.close-modal')
+        closeModals: document.querySelectorAll('.close-modal'),
+        modeToggle: document.getElementById('mode-toggle') // We'll add this element
     };
 
     // Input handling functions
@@ -539,6 +555,15 @@ document.addEventListener('DOMContentLoaded', () => {
             gameWon();
         } else {
             state.attempts--;
+            
+            // In Easy Mode, keep correct letters
+            if (state.easyMode) {
+                preserveCorrectLetters(guess, solution);
+            } else {
+                // In Normal Mode, clear all inputs
+                clearAllInputs();
+            }
+            
             if (state.attempts === 0) {
                 gameLost();
             } else {
@@ -547,6 +572,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         updateInfoDisplay();
+    }
+    
+    function preserveCorrectLetters(guess, solution) {
+        const inputs = document.querySelectorAll('.letter-input');
+        
+        // Check each character position
+        for (let i = 0; i < inputs.length; i++) {
+            if (i < solution.length && guess[i] === solution[i]) {
+                // Correct letter in correct position - keep it
+                inputs[i].value = guess[i];
+                inputs[i].classList.add('correct-letter'); // Optional: Add a CSS class for styling
+                inputs[i].setAttribute('readonly', true); // Make it read-only
+            } else if (inputs[i].getAttribute('readonly') !== 'true') {
+                // Clear incorrect letters that aren't already marked as correct
+                inputs[i].value = '';
+            }
+        }
+    }
+    
+    function clearAllInputs() {
+        const inputs = document.querySelectorAll('.letter-input');
+        inputs.forEach(input => {
+            input.value = '';
+        });
     }
 
     function showNextClue() {
@@ -569,9 +618,45 @@ document.addEventListener('DOMContentLoaded', () => {
         alert(`Game Over! The solution was: ${state.solution.words.join(' ')}`);
         // Implement reset game functionality
     }
+    
+    function toggleGameMode() {
+        state.easyMode = !state.easyMode;
+        
+        // Update the button text
+        const modeToggle = elements.modeToggle;
+        if (modeToggle) {
+            modeToggle.textContent = state.easyMode ? 'NORMAL MODE' : 'EASY MODE';
+            
+            // Reset the game when changing modes
+            resetGame();
+        }
+    }
+    
+    function resetGame() {
+        // Reset state
+        state.currentClue = 1;
+        state.attempts = 5;
+        state.score = 0;
+        
+        // Clear all inputs and remove any 'correct' styling
+        const inputs = document.querySelectorAll('.letter-input');
+        inputs.forEach(input => {
+            input.value = '';
+            input.classList.remove('correct-letter');
+            input.removeAttribute('readonly');
+        });
+        
+        // Update display
+        updateInfoDisplay();
+    }
 
     function setupEventListeners() {
         elements.submitButton.addEventListener('click', checkGuess);
+        
+        // Mode toggle button
+        if (elements.modeToggle) {
+            elements.modeToggle.addEventListener('click', toggleGameMode);
+        }
         
         // Modal handlers
         elements.howToPlayBtn.addEventListener('click', () => {
