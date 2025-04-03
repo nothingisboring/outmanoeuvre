@@ -83,6 +83,29 @@
     min-height: 2.5em;
 }
 
+.button-row {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+#submit-guess {
+    background-color: #3498db;
+}
+
+#skip-clue {
+    background-color: #7f8c8d;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+        
 #skip-clue {
     margin-top: 1rem;
     padding: 0.6rem 1.25rem;
@@ -243,6 +266,9 @@
         .key-wide {
             min-width: 5rem;
         }
+
+        
+}
 
         .game-message {
             position: fixed;
@@ -622,33 +648,48 @@
     </header>
 
     <div class="game-container">
-        <div class="info-container">
-            <div class="info-box">Clue <span id="clue-number">1</span>/5</div>
-            <div class="info-box">Score: <span id="score">0</span></div>
-        </div>
+       <div class="game-container">
+    <div class="info-container">
+        <div class="info-box">Puzzle: <span id="puzzle-date"></span></div>
+        <div class="info-box">Clue <span id="clue-number">1</span>/5</div>
+        <div class="info-box">Score: <span id="score">0</span></div>
+        <div class="info-box">Oeuvre Guesses: <span id="oeuvre-attempts">3</span></div>
+    </div>
+
+ <!-- Add the button container before the clue container -->
+    <div class="button-container">
+        <button id="how-to-play-btn" class="action-button">How to Play</button>
+        <button id="archive-btn" class="action-button">Archive</button>
+    </div>
 
     <div class="clue-container">
-    <div class="clue-label">Current Clue:</div>
-    <div class="clue-text" id="clue-text">Finished tit, we hear (3,5)</div>
-    <div class="letter-input-container" id="letter-input-container"></div>
-    <div class="keyboard" id="keyboard"></div>
-    <button id="skip-clue" class="action-button">Skip Clue</button>
+        <div class="clue-label">Current Clue:</div>
+        <div class="clue-text" id="clue-text"></div>
+        <div class="letter-input-container" id="letter-input-container"></div>
+        <div class="button-row">
+            <button id="submit-guess" class="action-button">Submit</button>
+            <button id="skip-clue" class="action-button">Skip Clue</button>
+        </div>
+    </div>
+
+ <div class="keyboard" id="keyboard"></div>
+
+    <table id="solvedCluesTable">
+        <thead>
+            <tr>
+                <th>Clue</th>
+                <th>Answer</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </div>
 
     <div class="game-message" id="game-message">
             <p id="message-text"></p>
             <button id="message-button">OK</button>
         </div>
-        <table id="solvedCluesTable">
-            <thead>
-                <tr>
-                    <th>Clue</th>
-                    <th>Answer</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
+       
     </div>
 
     <div id="oeuvre-guess-modal">
@@ -660,10 +701,6 @@
         </div>
     </div>
     
-<!-- Add this in the header section, after the existing buttons -->
-<div class="button-container">
-    <button id="how-to-play-btn" class="action-button">How to Play</button>
-    <button id="archive-btn" class="action-button">Archive</button>
 </div>
 <!-- Add these modal containers at the end of the body, before the script tag -->
 <div id="how-to-play-modal" class="modal">
