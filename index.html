@@ -488,6 +488,7 @@
 
     <div class="game-container">
         <div class="info-container">
+             <div class="info-box">Puzzle: <span id="puzzle-date"></span></div>
             <div class="info-box">Clue <span id="clue-number">1</span>/5</div>
             <div class="info-box">Score: <span id="score">0</span></div>
         </div>
@@ -550,7 +551,7 @@
         let oeuvreGuessInputs = [];
         let skippedClues = [];
         let puzzlesData = null;
-        let currentPuzzleDate = null;
+        let currentPuzzleDate = "2025-04-03"; // Today's date as provided
 
         const clueTextElement = document.getElementById("clue-text");
         const clueNumberElement = document.getElementById("clue-number");
@@ -574,12 +575,7 @@
 
 function loadPuzzlesFromJSON() {
     return fetch('puzzles.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to load puzzles.json');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             puzzlesData = data;
             return data;
@@ -587,52 +583,33 @@ function loadPuzzlesFromJSON() {
         .catch(error => {
             console.error('Error loading puzzles:', error);
             showMessage('Failed to load puzzles. Please try again later.');
-            return null;
         });
 }
 function getTodaysPuzzle() {
     if (!puzzlesData) return null;
     
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date();
-    const dateString = today.toISOString().split('T')[0];
+    // Use current date (2025-04-03)
+    const dateString = currentPuzzleDate;
     
-    // Store current puzzle date for reference
-    currentPuzzleDate = dateString;
-    
-    // Find puzzle for today's date
     if (puzzlesData[dateString]) {
         return puzzlesData[dateString];
-    } else {
-        // If no puzzle for today, use the first available puzzle
-        const availableDates = Object.keys(puzzlesData);
-        if (availableDates.length > 0) {
-            currentPuzzleDate = availableDates[0];
-            return puzzlesData[availableDates[0]];
-        }
     }
     
     return null;
 }
-        // Update initializeGame function
-function initializeGame() {
+        function initializeGame() {
     // Load puzzles first if not already loaded
     if (!puzzlesData) {
         loadPuzzlesFromJSON()
             .then(() => {
                 const todaysPuzzle = getTodaysPuzzle();
                 if (todaysPuzzle) {
+                    // Update the game variables with today's puzzle
                     solution = todaysPuzzle.solution;
                     clues = todaysPuzzle.clues;
                     clueSolutions = todaysPuzzle.clueSolutions;
                     
-                    // Display puzzle date if available
-                    if (currentPuzzleDate) {
-                        document.getElementById('puzzle-date').textContent = 
-                            new Date(currentPuzzleDate).toLocaleDateString();
-                    }
-                    
-                    // Now initialize the rest of the game
+                    // Reset the game state
                     resetGameState();
                 } else {
                     showMessage('No puzzle available for today. Please check back later.');
@@ -673,14 +650,25 @@ function resetGameState() {
     currentGuess = "";
     guesses = [];
     gameOver = false;
-    clueRevealed = Array(clues.length).fill(false);
-    clueRevealed[0] = true;
+    clueRevealed = [true, false, false, false, false];
     oeuvreGuessAttempts = 3;
     score = 0;
     scoreElement.textContent = score;
+    clueNumberElement.textContent = `${currentClueIndex + 1}`;
+    clueTextElement.textContent = clues[currentClueIndex];
+    letterInputContainer.innerHTML = '';
+    currentSolution = clueSolutions[currentClueIndex];
+    createLetterInputs();
+    createKeyboard();
+    oeuvreGuessModal.style.display = "none";
     
+    // Update puzzle date display
+    const formattedDate = currentPuzzleDate + " 21:19:39"; // Using the provided time
+    document.getElementById('puzzle-date').textContent = formattedDate;
+}
     // Update info container
     document.querySelector(".info-container").innerHTML = `
+         <div class="info-box">Puzzle: <span id="puzzle-date"></span></div>
         <div class="info-box">Clue <span id="clue-number">1</span>/${clues.length}</div>
         <div class="info-box">Score: <span id="score">0</span></div>
         <div class="info-box">Oeuvre Guesses Left: <span id="oeuvre-attempts">${oeuvreGuessAttempts}</span></div>
