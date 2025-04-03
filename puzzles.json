@@ -45,7 +45,7 @@
     "clueSolutions": [
       "Q",
       "MINTA",
-      "TIME PASSES",
+      "TIMEPASSES",
       "SKYE",
       "LIGHTHOUSEKEEPER"
     ]
@@ -82,6 +82,22 @@
       "MOLE",
       "CIRCUS",
       "TINKER"
+    ],
+      "2025-04-06": {
+    "solution": "PRIDEANDPREJUDICE",
+    "clues": [
+      "English County(10)",
+      "Money-pot (5)",
+      "Museum in Cambridge (11)",
+      "Dictionary (7)",
+      "Everyone co (11,11)"
+    ],
+    "clueSolutions": [
+      "DERBYSHIRE",
+      "KITTY",
+      "FITZWILLIAM",
+      "COLLINS",
+      "UNIVERSALLYACKNOWLEDGED"
     ]
   }
 }
