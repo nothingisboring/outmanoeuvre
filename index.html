@@ -983,10 +983,6 @@ function checkForNewPuzzle() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initializeGame();
-    
-   // Update the showMessage function to support custom button text and action
 function showMessage(message, buttonText = "OK", buttonAction = null) {
     messageTextElement.textContent = message;
     messageButton.textContent = buttonText;
@@ -1001,6 +997,11 @@ function showMessage(message, buttonText = "OK", buttonAction = null) {
         }
     };
 }
+        
+document.addEventListener('DOMContentLoaded', () => {
+    initializeGame();
+    
+   // Update the showMessage function to support custom button text and action
 
       function createLetterInputs() {
     const solutionLength = currentSolution.length;
